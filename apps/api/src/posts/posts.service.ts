@@ -103,4 +103,34 @@ export class PostsService {
     ]);
     return comment;
   }
+
+  async toggleBookmark(userId: string, postId: string) {
+    const existing = await this.prisma.bookmark.findUnique({
+      where: { userId_postId: { userId, postId } },
+    });
+
+    if (existing) {
+      await this.prisma.bookmark.delete({ where: { userId_postId: { userId, postId } } });
+    } else {
+      await this.prisma.bookmark.create({ data: { userId, postId } });
+    }
+
+    return { bookmarked: !existing };
+  }
+
+  async getBookmarks(userId: string) {
+    return this.prisma.bookmark.findMany({
+      where: { userId },
+      include: {
+        post: {
+          include: {
+            user: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+            gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 30,
+    });
+  }
 }

@@ -43,4 +43,14 @@ export class PostsController {
   ) {
     return this.postsService.addComment(user.sub, id, content);
   }
+
+  @Post(':id/bookmark')
+  toggleBookmark(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.postsService.toggleBookmark(user.sub, id);
+  }
+
+  @Get('bookmarks/me')
+  getBookmarks(@CurrentUser() user: JwtPayload) {
+    return this.postsService.getBookmarks(user.sub);
+  }
 }
