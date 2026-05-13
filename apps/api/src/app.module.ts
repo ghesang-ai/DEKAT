@@ -9,6 +9,9 @@ import { MediaModule } from './media/media.module';
 import { SocialModule } from './social/social.module';
 import { CommunitiesModule } from './communities/communities.module';
 import { InvitesModule } from './invites/invites.module';
+import { AiModule } from './ai/ai.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { EventsGateway } from './gateway/events.gateway';
 
 @Module({
   imports: [
@@ -17,6 +20,7 @@ import { InvitesModule } from './invites/invites.module';
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     }),
     PrismaModule,
+    NotificationsModule,
     AuthModule,
     GadgetsModule,
     PostsModule,
@@ -24,6 +28,8 @@ import { InvitesModule } from './invites/invites.module';
     SocialModule,
     CommunitiesModule,
     InvitesModule,
+    AiModule,
   ],
+  providers: [EventsGateway],
 })
 export class AppModule {}
