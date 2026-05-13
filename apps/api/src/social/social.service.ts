@@ -1,0 +1,69 @@
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class SocialService {
+  constructor(private prisma: PrismaService) {}
+
+  async toggleFollow(followerId: string, followingId: string) {
+    if (followerId === followingId) throw new BadRequestException('Tidak bisa follow diri sendiri');
+
+    const target = await this.prisma.user.findUnique({ where: { id: followingId } });
+    if (!target) throw new NotFoundException('User tidak ditemukan');
+
+    const existing = await this.prisma.follow.findUnique({
+      where: { followerId_followingId: { followerId, followingId } },
+    });
+
+    await this.prisma.$transaction(async (tx) => {
+      if (existing) {
+        await tx.follow.delete({ where: { followerId_followingId: { followerId, followingId } } });
+      } else {
+        await tx.follow.create({ data: { followerId, followingId } });
+      }
+    });
+
+    return { following: !existing };
+  }
+
+  async findByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({ where: { username }, select: { id: true } });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
+    return user;
+  }
+
+  async getProfile(username: string, viewerId?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true, username: true, displayName: true, avatarUrl: true,
+        bio: true, trustScore: true, createdAt: true,
+        _count: { select: { posts: true, followers: true, following: true } },
+      },
+    });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
+
+    let isFollowing = false;
+    if (viewerId) {
+      const follow = await this.prisma.follow.findUnique({
+        where: { followerId_followingId: { followerId: viewerId, followingId: user.id } },
+      });
+      isFollowing = !!follow;
+    }
+
+    return { ...user, isFollowing };
+  }
+
+  async getTrending(limit = 10) {
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    return this.prisma.post.findMany({
+      where: { createdAt: { gte: since } },
+      include: {
+        user: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+        gadget: { select: { id: true, name: true, brand: true } },
+      },
+      orderBy: { likeCount: 'desc' },
+      take: limit,
+    });
+  }
+}

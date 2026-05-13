@@ -5,6 +5,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { GadgetsModule } from './gadgets/gadgets.module';
 import { PostsModule } from './posts/posts.module';
+import { MediaModule } from './media/media.module';
+import { SocialModule } from './social/social.module';
+import { CommunitiesModule } from './communities/communities.module';
+import { InvitesModule } from './invites/invites.module';
 
 @Module({
   imports: [
@@ -16,6 +20,10 @@ import { PostsModule } from './posts/posts.module';
     AuthModule,
     GadgetsModule,
     PostsModule,
+    MediaModule,
+    SocialModule,
+    CommunitiesModule,
+    InvitesModule,
   ],
 })
 export class AppModule {}
