@@ -12,6 +12,7 @@ import { InvitesModule } from './invites/invites.module';
 import { AiModule } from './ai/ai.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventsGateway } from './gateway/events.gateway';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EventsGateway } from './gateway/events.gateway';
     InvitesModule,
     AiModule,
   ],
+  controllers: [AppController],
   providers: [EventsGateway],
 })
 export class AppModule {}
