@@ -3,7 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -79,6 +81,7 @@ model Gadget {
   communities Community[]
   userGadgets UserGadget[]
 
+  @@unique([name, brand])
   @@index([brand])
   @@index([category])
 }
@@ -170,6 +173,7 @@ model Community {
   gadgetId    String?
   memberCount Int      @default(0)
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   gadget  Gadget?           @relation(fields: [gadgetId], references: [id])
   members CommunityMember[]
