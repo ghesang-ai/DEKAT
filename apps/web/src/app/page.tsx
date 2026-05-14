@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
-import { Button } from "@/components/ui/button";
 import { Star, GitCompare, Users, Shield, Smartphone, ArrowRight } from "lucide-react";
 
 const features = [
@@ -39,9 +38,7 @@ export default function LandingPage() {
         <span className="text-xl font-bold tracking-tight">DEKAT</span>
         <div className="flex items-center gap-3">
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground font-medium">Masuk</Link>
-          <Button size="sm" asChild>
-            <Link href="/register">Daftar Gratis</Link>
-          </Button>
+          <Link href="/register" className="inline-flex items-center justify-center rounded-md bg-foreground text-background text-sm font-medium px-4 py-2 hover:bg-foreground/90 transition-colors">Daftar Gratis</Link>
         </div>
       </nav>
 
@@ -60,14 +57,12 @@ export default function LandingPage() {
           Komunitas eksklusif untuk pecinta gadget Indonesia. Baca ulasan jujur, bandingkan dengan AI, dan berbagi pengalaman.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button size="lg" className="text-base px-8" asChild>
-            <Link href="/register">
-              Bergabung Sekarang <ArrowRight size={16} className="ml-2" />
-            </Link>
-          </Button>
-          <Button size="lg" variant="outline" className="text-base px-8" asChild>
-            <Link href="/login">Sudah punya akun</Link>
-          </Button>
+          <Link href="/register" className="inline-flex items-center justify-center rounded-md bg-foreground text-background text-base font-medium px-8 py-3 hover:bg-foreground/90 transition-colors gap-2">
+            Bergabung Sekarang <ArrowRight size={16} />
+          </Link>
+          <Link href="/login" className="inline-flex items-center justify-center rounded-md border border-input text-base font-medium px-8 py-3 hover:bg-muted transition-colors">
+            Sudah punya akun
+          </Link>
         </div>
         <p className="text-xs text-muted-foreground mt-4">Gratis selamanya · Komunitas terpercaya</p>
       </section>
@@ -137,9 +132,9 @@ export default function LandingPage() {
           <Smartphone size={40} className="mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-2xl font-bold mb-3">Siap bergabung?</h2>
           <p className="text-muted-foreground mb-6 text-sm">Daftar sekarang dan jadi bagian dari komunitas gadget terpercaya Indonesia.</p>
-          <Button size="lg" className="w-full sm:w-auto px-10" asChild>
-            <Link href="/register">Daftar Gratis Sekarang</Link>
-          </Button>
+          <Link href="/register" className="inline-flex items-center justify-center rounded-md bg-foreground text-background text-base font-medium w-full sm:w-auto px-10 py-3 hover:bg-foreground/90 transition-colors">
+            Daftar Gratis Sekarang
+          </Link>
         </div>
       </section>
 
