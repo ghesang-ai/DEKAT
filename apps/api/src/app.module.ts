@@ -10,6 +10,7 @@ import { SocialModule } from './social/social.module';
 import { CommunitiesModule } from './communities/communities.module';
 import { InvitesModule } from './invites/invites.module';
 import { AiModule } from './ai/ai.module';
+import { AdminModule } from './admin/admin.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventsGateway } from './gateway/events.gateway';
 import { AppController } from './app.controller';
@@ -30,6 +31,7 @@ import { AppController } from './app.controller';
     CommunitiesModule,
     InvitesModule,
     AiModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [EventsGateway],
