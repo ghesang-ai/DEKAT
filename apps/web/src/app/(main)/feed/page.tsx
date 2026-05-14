@@ -105,7 +105,7 @@ export default function FeedPage() {
       <header className="sticky top-0 z-10">
         <div className="bg-[#c0281f] px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
-            <img src="/logo-white.png" alt="DEKAT" className="h-11 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))" }} />
+            <img src="/logo-white.png" alt="DEKAT" className="object-contain" style={{ height: '55px', filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))" }} />
             <div className="flex items-center gap-4">
               <button className="text-white opacity-90 hover:opacity-100">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
