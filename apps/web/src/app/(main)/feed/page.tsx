@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { PostCard } from "@/components/feed/PostCard";
-import { StoriesRow } from "@/components/feed/StoriesRow";
+import { GadgetTrending } from "@/components/feed/GadgetTrending";
 import { cn } from "@/lib/utils";
 
 interface Post {
@@ -90,7 +90,7 @@ export default function FeedPage() {
         </div>
       </header>
 
-      <StoriesRow />
+      <GadgetTrending />
 
       {loading ? (
         <div className="flex items-center justify-center h-48">

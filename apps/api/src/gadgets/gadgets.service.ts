@@ -5,13 +5,15 @@ import { GadgetCategory } from '@prisma/client';
 interface FindAllOptions {
   search: string;
   category?: GadgetCategory;
+  sort?: 'trending' | 'default';
+  limit?: number;
 }
 
 @Injectable()
 export class GadgetsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll({ search, category }: FindAllOptions) {
+  findAll({ search, category, sort, limit = 50 }: FindAllOptions) {
     return this.prisma.gadget.findMany({
       where: {
         ...(search && {
@@ -22,8 +24,16 @@ export class GadgetsService {
         }),
         ...(category && { category }),
       },
-      orderBy: { reviewCount: 'desc' },
-      take: 50,
+      orderBy: sort === 'trending'
+        ? [{ avgScore: 'desc' }, { reviewCount: 'desc' }]
+        : { reviewCount: 'desc' },
+      take: limit,
+    });
+  }
+
+  findTrending(ids: string[]) {
+    return this.prisma.gadget.findMany({
+      where: { id: { in: ids } },
     });
   }
 

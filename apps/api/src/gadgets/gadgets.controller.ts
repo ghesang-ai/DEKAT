@@ -9,8 +9,13 @@ export class GadgetsController {
   constructor(private gadgetsService: GadgetsService) {}
 
   @Get()
-  findAll(@Query('search') search = '', @Query('category') category?: GadgetCategory) {
-    return this.gadgetsService.findAll({ search, category });
+  findAll(
+    @Query('search') search = '',
+    @Query('category') category?: GadgetCategory,
+    @Query('sort') sort?: 'trending' | 'default',
+    @Query('limit') limit?: string,
+  ) {
+    return this.gadgetsService.findAll({ search, category, sort, limit: limit ? parseInt(limit) : 50 });
   }
 
   @Get(':id')
