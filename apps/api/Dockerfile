@@ -1,27 +1,17 @@
-FROM node:20-alpine AS base
+FROM node:22-slim
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm
-
-FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-workspace.yaml ./
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/types/package.json ./packages/types/
 COPY apps/api/package.json ./apps/api/
 RUN pnpm install --frozen-lockfile
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/types/node_modules ./packages/types/node_modules
-COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY . .
+RUN cd apps/api && npx prisma generate
 RUN pnpm --filter api build
-RUN pnpm --filter api prisma generate
 
-FROM base AS runner
-WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/node_modules ./node_modules
-COPY --from=builder /app/apps/api/prisma ./prisma
 EXPOSE 3001
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "apps/api/dist/src/main.js"]
