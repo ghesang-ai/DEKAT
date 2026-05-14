@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -29,5 +29,11 @@ export class AuthController {
   @UseGuards(JwtGuard)
   getMe(@CurrentUser() user: JwtPayload) {
     return this.authService.getMe(user.sub);
+  }
+
+  @Patch('onboarding')
+  @UseGuards(JwtGuard)
+  completeOnboarding(@CurrentUser() user: JwtPayload, @Body() body: { gadgetId: string }) {
+    return this.authService.completeOnboarding(user.sub, body.gadgetId);
   }
 }

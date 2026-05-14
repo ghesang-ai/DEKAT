@@ -7,14 +7,15 @@ export class AdminService {
   constructor(private prisma: PrismaService) {}
 
   async getStats() {
-    const [users, posts, gadgets, invites, pendingCompares] = await Promise.all([
+    const [users, posts, gadgets, invites, pendingCompares, pendingUsers] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.post.count(),
       this.prisma.gadget.count(),
       this.prisma.invite.count({ where: { usedById: null, expiresAt: { gt: new Date() } } }),
       this.prisma.aiComparison.count({ where: { status: 'pending' } }),
+      this.prisma.user.count({ where: { status: 'pending' } }),
     ]);
-    return { users, posts, gadgets, activeInvites: invites, pendingCompares };
+    return { users, posts, gadgets, activeInvites: invites, pendingCompares, pendingUsers };
   }
 
   async getPosts(page = 1, limit = 20) {
@@ -59,6 +60,31 @@ export class AdminService {
       this.prisma.user.count({ where }),
     ]);
     return { data, total, page, limit };
+  }
+
+  async getPendingUsers() {
+    return this.prisma.user.findMany({
+      where: { status: 'pending' },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        id: true, username: true, displayName: true, email: true, phone: true,
+        currentGadgetId: true, createdAt: true,
+        _count: { select: { posts: true } },
+      },
+    });
+  }
+
+  async approveUser(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
+    return this.prisma.user.update({ where: { id: userId }, data: { status: 'active' } });
+  }
+
+  async rejectUser(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
+    await this.prisma.user.delete({ where: { id: userId } });
+    return { message: 'User ditolak dan dihapus' };
   }
 
   async updateTrustScore(userId: string, trustScore: number) {

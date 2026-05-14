@@ -32,6 +32,21 @@ export class AdminController {
     return this.adminService.deletePost(id);
   }
 
+  @Get('users/pending')
+  getPendingUsers() {
+    return this.adminService.getPendingUsers();
+  }
+
+  @Patch('users/:id/approve')
+  approveUser(@Param('id') id: string) {
+    return this.adminService.approveUser(id);
+  }
+
+  @Delete('users/:id/reject')
+  rejectUser(@Param('id') id: string) {
+    return this.adminService.rejectUser(id);
+  }
+
   @Get('users')
   getUsers(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,

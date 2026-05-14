@@ -34,7 +34,7 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
-      data: { email: dto.email, username: dto.username, displayName: dto.displayName, passwordHash, role: 'admin' },
+      data: { email: dto.email, username: dto.username, displayName: dto.displayName, passwordHash, role: 'admin', status: 'active' },
     });
 
     return this.signTokens(user);
@@ -53,11 +53,19 @@ export class AuthService {
   async getMe(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, createdAt: true },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, status: true, currentGadgetId: true, createdAt: true },
     });
   }
 
-  private async signTokens(user: { id: string; email: string; role: string; username: string; displayName: string; avatarUrl?: string | null; trustScore?: number }) {
+  async completeOnboarding(userId: string, gadgetId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { currentGadgetId: gadgetId },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, trustScore: true, role: true, status: true, currentGadgetId: true },
+    });
+  }
+
+  private async signTokens(user: { id: string; email: string; role: string; status: string; username: string; displayName: string; avatarUrl?: string | null; trustScore?: number }) {
     const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role as any };
     const token = this.jwt.sign(payload);
     return {
@@ -70,6 +78,7 @@ export class AuthService {
         avatarUrl: user.avatarUrl ?? null,
         trustScore: user.trustScore ?? 0,
         role: user.role,
+        status: user.status,
       },
     };
   }

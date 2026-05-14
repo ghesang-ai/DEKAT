@@ -10,6 +10,8 @@ interface User {
   bio?: string;
   trustScore: number;
   role: "user" | "admin";
+  status: "pending" | "active";
+  currentGadgetId?: string | null;
 }
 
 interface AuthState {
@@ -17,6 +19,7 @@ interface AuthState {
   token: string | null;
   _hasHydrated: boolean;
   setAuth: (user: User, token: string) => void;
+  updateUser: (partial: Partial<User>) => void;
   logout: () => void;
   setHasHydrated: (v: boolean) => void;
 }
@@ -31,6 +34,7 @@ export const useAuthStore = create<AuthState>()(
         localStorage.setItem("token", token);
         set({ user, token });
       },
+      updateUser: (partial) => set((s) => ({ user: s.user ? { ...s.user, ...partial } : null })),
       logout: () => {
         localStorage.removeItem("token");
         set({ user: null, token: null });

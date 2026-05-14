@@ -4,11 +4,12 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
-import { LayoutDashboard, FileText, Users, Ticket, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Ticket, LogOut, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/pending", label: "Persetujuan Member", icon: UserCheck },
   { href: "/admin/posts", label: "Moderasi Post", icon: FileText },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/invites", label: "Invite Code", icon: Ticket },

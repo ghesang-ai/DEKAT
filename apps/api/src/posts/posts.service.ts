@@ -7,6 +7,11 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, dto: CreatePostDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { status: true } });
+    if (!user || user.status !== 'active') {
+      throw new ForbiddenException('Akun kamu sedang menunggu persetujuan admin. Kamu belum bisa membuat postingan.');
+    }
+
     return this.prisma.post.create({
       data: {
         userId,

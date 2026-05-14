@@ -56,7 +56,7 @@ export default function RegisterPage() {
         password: data.password,
       });
       setAuth(res.data.user, res.data.token);
-      router.push("/");
+      router.push("/onboarding");
     } catch (err: unknown) {
       const msg = err && typeof err === "object" && "response" in err
         ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
