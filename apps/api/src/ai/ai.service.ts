@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CompareRequestDto } from './dto/compare-request.dto';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 @Injectable()
 export class AiService {
-  private openai: OpenAI;
+  private anthropic: Anthropic;
 
   constructor(private prisma: PrismaService) {
-    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   }
 
   async createComparison(userId: string, dto: CompareRequestDto) {
@@ -65,23 +65,18 @@ export class AiService {
 
       const prompt = this.buildPrompt(gadgetContext, comparison.userBudget, comparison.userUsecase);
 
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: `Kamu adalah ahli gadget Indonesia yang membantu user membandingkan device secara objektif.
+      const response = await this.anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        system: `Kamu adalah ahli gadget Indonesia yang membantu user membandingkan device secara objektif.
 Gunakan data spesifikasi dan review komunitas yang diberikan.
 Selalu jawab dalam Bahasa Indonesia yang natural dan mudah dipahami.
-Output HARUS berupa JSON valid sesuai schema yang diminta.`,
-          },
-          { role: 'user', content: prompt },
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.3,
+Output HARUS berupa JSON valid sesuai schema yang diminta. Jangan tambahkan teks apapun di luar JSON.`,
+        messages: [{ role: 'user', content: prompt }],
       });
 
-      const result = JSON.parse(response.choices[0].message.content ?? '{}');
+      const text = response.content[0].type === 'text' ? response.content[0].text : '{}';
+      const result = JSON.parse(text);
 
       await this.prisma.aiComparison.update({
         where: { id: comparisonId },
