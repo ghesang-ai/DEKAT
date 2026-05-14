@@ -42,6 +42,7 @@ model User {
   username     String   @unique @db.VarChar(30)
   displayName  String   @db.VarChar(60)
   email        String   @unique @db.VarChar(255)
+  phone        String?  @db.VarChar(20)
   passwordHash String?
   avatarUrl    String?
   bio          String?
