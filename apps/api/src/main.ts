@@ -10,10 +10,17 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, transform: true }),
   );
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      process.env.WEB_URL,
-    ].filter(Boolean) as string[],
+    origin: (origin, callback) => {
+      const allowed = [
+        'http://localhost:3000',
+        process.env.WEB_URL,
+      ].filter(Boolean);
+      if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
