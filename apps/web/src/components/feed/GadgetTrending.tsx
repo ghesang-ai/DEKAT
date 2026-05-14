@@ -15,24 +15,27 @@ export function GadgetTrending() {
   const router = useRouter();
 
   return (
-    <div className="border-b border-border py-3">
-      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 mb-2.5">
-        🔥 Gadget Trending
-      </p>
-      <div className="flex gap-3 px-4 overflow-x-auto scrollbar-none pb-1">
+    <div className="bg-white rounded-2xl shadow-sm p-4">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[13px] font-bold text-gray-800 uppercase tracking-wide">
+          🔥 Gadget Trending
+        </p>
+        <button className="text-[12px] font-semibold text-[#d42b2b]">Lihat semua ›</button>
+      </div>
+      <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
         {GADGETS.map((g) => (
           <button
             key={g.id}
             onClick={() => router.push(`/gadget/${g.id}`)}
             className="flex flex-col items-center gap-1.5 flex-shrink-0 group"
           >
-            <div className="w-16 h-16 rounded-2xl bg-muted border border-border flex items-center justify-center group-hover:border-foreground transition-colors">
+            <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:border-[#d42b2b] transition-colors">
               <span className="text-2xl">{g.emoji}</span>
             </div>
-            <span className="text-[11px] font-medium text-foreground text-center leading-tight max-w-[68px] truncate">
+            <span className="text-[11px] font-medium text-gray-700 text-center leading-tight max-w-[68px] truncate">
               {g.name}
             </span>
-            <span className="text-[10px] text-muted-foreground">{g.brand}</span>
+            <span className="text-[10px] text-gray-400">{g.brand}</span>
           </button>
         ))}
       </div>

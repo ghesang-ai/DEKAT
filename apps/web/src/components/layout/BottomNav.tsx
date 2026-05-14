@@ -17,30 +17,31 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 bg-background/80 backdrop-blur-xl border-t border-border z-50">
-      <div className="flex justify-around items-center h-14 max-w-lg mx-auto px-2">
+    <nav className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 z-50 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
+      <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           const isPost = href === "/post/new";
+          if (isPost) {
+            return (
+              <Link key={href} href={href} className="flex flex-col items-center gap-0.5 -mt-4">
+                <div className="w-12 h-12 rounded-full bg-[#d42b2b] flex items-center justify-center shadow-md">
+                  <Icon size={24} strokeWidth={2.5} className="text-white" />
+                </div>
+              </Link>
+            );
+          }
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors",
-                isPost
-                  ? "text-foreground"
-                  : active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                "flex flex-col items-center gap-0.5 px-3 py-1 transition-colors",
+                active ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600"
               )}
             >
-              <Icon
-                size={isPost ? 26 : 22}
-                strokeWidth={active || isPost ? 2.5 : 1.8}
-                className={cn(isPost && "text-foreground")}
-              />
-              <span className="text-[10px] font-medium">{label}</span>
+              <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
+              <span className={cn("text-[10px] font-medium", active && "font-bold")}>{label}</span>
             </Link>
           );
         })}

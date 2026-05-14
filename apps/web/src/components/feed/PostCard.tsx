@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageCircle, Bookmark, Star } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Star, Share2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/lib/api";
@@ -70,26 +70,26 @@ export function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <article className="px-4 py-4 space-y-3">
+    <article className="bg-white rounded-2xl shadow-sm px-4 py-4 space-y-3">
       <div className="flex items-center justify-between">
         <Link href={`/profile/${post.user.username}`} className="flex items-center gap-2.5">
-          <Avatar className="w-9 h-9">
+          <Avatar className="w-10 h-10">
             <AvatarImage src={post.user.avatarUrl ?? undefined} />
-            <AvatarFallback>{post.user.displayName[0]}</AvatarFallback>
+            <AvatarFallback className="bg-[#d42b2b] text-white font-bold">{post.user.displayName[0]}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-semibold leading-none">{post.user.displayName}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">@{post.user.username}</p>
+            <div className="flex items-center gap-1">
+              <p className="text-sm font-bold leading-none">{post.user.displayName}</p>
+              {post.user.trustScore >= 70 && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#d42b2b"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              )}
+            </div>
+            <p className="text-xs text-gray-400 mt-0.5">@{post.user.username} · {formatDistance(post.createdAt)}</p>
           </div>
         </Link>
-        <div className="flex items-center gap-2">
-          {post.type === "review" && (
-            <Badge variant="secondary" className="text-xs gap-1">
-              <Star size={10} strokeWidth={2} /> Review
-            </Badge>
-          )}
-          <span className="text-xs text-muted-foreground">{formatDistance(post.createdAt)}</span>
-        </div>
+        <button className="text-gray-400 hover:text-gray-600 p-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
       </div>
 
       {post.gadget && (
@@ -121,21 +121,25 @@ export function PostCard({ post }: { post: Post }) {
         </div>
       )}
 
-      <div className="flex items-center gap-4 pt-1">
+      <div className="flex items-center gap-5 pt-1 border-t border-gray-50">
         <button
           onClick={toggleLike}
-          className={cn("flex items-center gap-1.5 text-sm transition-colors", liked ? "text-red-500" : "text-muted-foreground hover:text-foreground")}
+          className={cn("flex items-center gap-1.5 text-sm font-medium transition-colors", liked ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600")}
         >
           <Heart size={18} fill={liked ? "currentColor" : "none"} strokeWidth={1.8} />
           <span>{likeCount}</span>
         </button>
-        <Link href={`/post/${post.id}`} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link href={`/post/${post.id}`} className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
           <MessageCircle size={18} strokeWidth={1.8} />
           <span>{post.commentCount}</span>
         </Link>
+        <button className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+          <Share2 size={16} strokeWidth={1.8} />
+          <span>Bagikan</span>
+        </button>
         <button
           onClick={toggleBookmark}
-          className={cn("ml-auto flex items-center transition-colors", bookmarked ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
+          className={cn("ml-auto flex items-center transition-colors", bookmarked ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600")}
         >
           <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} strokeWidth={1.8} />
         </button>
