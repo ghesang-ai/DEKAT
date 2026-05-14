@@ -50,7 +50,7 @@ export class PostsService {
     });
     const followingIds = following.map((f) => f.followingId);
 
-    return this.prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       where: {
         OR: [
           { userId: { in: followingIds } },
@@ -61,11 +61,19 @@ export class PostsService {
         user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
         gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
         _count: { select: { likes: true, comments: true } },
+        likes: { where: { userId }, select: { reactionType: true } },
+        bookmarks: { where: { userId }, select: { userId: true } },
       },
       orderBy: { createdAt: 'desc' },
       take: 20,
       ...(cursor && { cursor: { id: cursor }, skip: 1 }),
     });
+
+    return posts.map(({ likes, bookmarks, ...p }) => ({
+      ...p,
+      userReaction: likes[0]?.reactionType ?? null,
+      isBookmarked: bookmarks.length > 0,
+    }));
   }
 
   async findOne(id: string) {
@@ -95,22 +103,32 @@ export class PostsService {
     return this.prisma.post.delete({ where: { id: postId } });
   }
 
-  async toggleLike(userId: string, postId: string) {
+  async toggleReact(userId: string, postId: string, type = 'love') {
     const existing = await this.prisma.like.findUnique({
       where: { userId_postId: { userId, postId } },
     });
 
-    await this.prisma.$transaction(async (tx) => {
-      if (existing) {
-        await tx.like.delete({ where: { userId_postId: { userId, postId } } });
-        await tx.post.update({ where: { id: postId }, data: { likeCount: { decrement: 1 } } });
+    if (existing) {
+      if (existing.reactionType === type) {
+        await this.prisma.$transaction([
+          this.prisma.like.delete({ where: { userId_postId: { userId, postId } } }),
+          this.prisma.post.update({ where: { id: postId }, data: { likeCount: { decrement: 1 } } }),
+        ]);
+        return { reacted: false, reactionType: null };
       } else {
-        await tx.like.create({ data: { userId, postId } });
-        await tx.post.update({ where: { id: postId }, data: { likeCount: { increment: 1 } } });
+        await this.prisma.like.update({
+          where: { userId_postId: { userId, postId } },
+          data: { reactionType: type },
+        });
+        return { reacted: true, reactionType: type };
       }
-    });
-
-    return { liked: !existing };
+    } else {
+      await this.prisma.$transaction([
+        this.prisma.like.create({ data: { userId, postId, reactionType: type } }),
+        this.prisma.post.update({ where: { id: postId }, data: { likeCount: { increment: 1 } } }),
+      ]);
+      return { reacted: true, reactionType: type };
+    }
   }
 
   async addComment(userId: string, postId: string, content: string) {

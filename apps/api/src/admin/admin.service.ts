@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { nanoid } from 'nanoid';
 
@@ -116,7 +116,12 @@ export class AdminService {
   }
 
   async createGadget(data: { name: string; brand: string; category: string; imageUrl?: string; specs?: object }) {
-    return this.prisma.gadget.create({ data: { ...data, category: data.category as any, specs: data.specs ?? {} } });
+    try {
+      return await this.prisma.gadget.create({ data: { ...data, category: data.category as any, specs: data.specs ?? {} } });
+    } catch (e: any) {
+      if (e?.code === 'P2002') throw new ConflictException(`Gadget "${data.name}" dari brand "${data.brand}" sudah ada`);
+      throw e;
+    }
   }
 
   async updateGadget(id: string, data: { name?: string; brand?: string; category?: string; imageUrl?: string; specs?: object }) {

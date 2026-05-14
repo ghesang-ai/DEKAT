@@ -50,7 +50,7 @@ interface Post {
   createdAt: string;
   user: { id: string; username: string; displayName: string; avatarUrl: string | null; trustScore: number };
   gadget: { id: string; name: string; brand: string; imageUrl: string | null } | null;
-  isLiked?: boolean;
+  userReaction?: string | null;
   isBookmarked?: boolean;
 }
 

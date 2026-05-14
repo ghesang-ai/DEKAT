@@ -39,8 +39,12 @@ export class PostsController {
   }
 
   @Post(':id/like')
-  toggleLike(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    return this.postsService.toggleLike(user.sub, id);
+  toggleLike(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body('type') type = 'love',
+  ) {
+    return this.postsService.toggleReact(user.sub, id, type);
   }
 
   @Post(':id/comment')

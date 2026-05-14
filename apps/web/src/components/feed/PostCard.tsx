@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageCircle, Bookmark, Star, Share2 } from "lucide-react";
+import { MessageCircle, Bookmark, Star, Share2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { formatDistance } from "@/lib/time";
+
+const REACTIONS = [
+  { type: "love", emoji: "❤️", label: "Love" },
+  { type: "fire", emoji: "🔥", label: "Hot" },
+  { type: "wow",  emoji: "😮", label: "Wow" },
+  { type: "haha", emoji: "😂", label: "Haha" },
+  { type: "like", emoji: "👍", label: "Suka" },
+];
 
 interface Post {
   id: string;
@@ -19,7 +26,7 @@ interface Post {
   likeCount: number;
   commentCount: number;
   createdAt: string;
-  isLiked?: boolean;
+  userReaction?: string | null;
   isBookmarked?: boolean;
   user: {
     id: string;
@@ -37,23 +44,32 @@ interface Post {
 }
 
 export function PostCard({ post }: { post: Post }) {
-  const [liked, setLiked] = useState(post.isLiked ?? false);
+  const [userReaction, setUserReaction] = useState<string | null>(post.userReaction ?? null);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [bookmarked, setBookmarked] = useState(post.isBookmarked ?? false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
-  const toggleLike = async () => {
+  useEffect(() => {
+    if (!showPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (!pickerRef.current?.contains(e.target as Node)) setShowPicker(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showPicker]);
+
+  const react = async (type: string) => {
+    setShowPicker(false);
+    const removing = userReaction === type;
+    const wasReacted = userReaction !== null;
     try {
-      if (liked) {
-        await api.delete(`/posts/${post.id}/like`);
-        setLikeCount((n) => n - 1);
-      } else {
-        await api.post(`/posts/${post.id}/like`);
-        setLikeCount((n) => n + 1);
-      }
-      setLiked(!liked);
-    } catch {
-      // silently fail
-    }
+      const res = await api.post(`/posts/${post.id}/like`, { type });
+      setUserReaction(res.data.reactionType);
+      if (removing) setLikeCount((n) => n - 1);
+      else if (!wasReacted) setLikeCount((n) => n + 1);
+    } catch {}
   };
 
   const toggleBookmark = async () => {
@@ -64,10 +80,23 @@ export function PostCard({ post }: { post: Post }) {
         await api.post(`/posts/${post.id}/bookmark`);
       }
       setBookmarked(!bookmarked);
-    } catch {
-      // silently fail
+    } catch {}
+  };
+
+  const share = async () => {
+    const url = `${window.location.origin}/post/${post.id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `Post oleh ${post.user.displayName} di DEKAT`, url });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  const currentReaction = REACTIONS.find((r) => r.type === userReaction);
 
   return (
     <article className="bg-white rounded-2xl shadow-sm px-4 py-4 space-y-3">
@@ -122,21 +151,52 @@ export function PostCard({ post }: { post: Post }) {
       )}
 
       <div className="flex items-center gap-5 pt-1 border-t border-gray-50">
-        <button
-          onClick={toggleLike}
-          className={cn("flex items-center gap-1.5 text-sm font-medium transition-colors", liked ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600")}
-        >
-          <Heart size={18} fill={liked ? "currentColor" : "none"} strokeWidth={1.8} />
-          <span>{likeCount}</span>
-        </button>
+        {/* Reaction button */}
+        <div className="relative" ref={pickerRef}>
+          {showPicker && (
+            <div className="absolute bottom-9 left-0 bg-white rounded-2xl shadow-xl border border-gray-100 flex items-center gap-0.5 p-1.5 z-20">
+              {REACTIONS.map((r) => (
+                <button
+                  key={r.type}
+                  onClick={() => react(r.type)}
+                  title={r.label}
+                  className={cn(
+                    "text-xl w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150 hover:scale-125 hover:bg-gray-50",
+                    userReaction === r.type && "bg-red-50 scale-110"
+                  )}
+                >
+                  {r.emoji}
+                </button>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={() => setShowPicker((p) => !p)}
+            className={cn(
+              "flex items-center gap-1.5 text-sm font-medium transition-colors select-none",
+              userReaction ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600"
+            )}
+          >
+            <span className="text-base leading-none">
+              {currentReaction ? currentReaction.emoji : "🤍"}
+            </span>
+            <span>{likeCount}</span>
+          </button>
+        </div>
+
         <Link href={`/post/${post.id}`} className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
           <MessageCircle size={18} strokeWidth={1.8} />
           <span>{post.commentCount}</span>
         </Link>
-        <button className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+
+        <button
+          onClick={share}
+          className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+        >
           <Share2 size={16} strokeWidth={1.8} />
-          <span>Bagikan</span>
+          <span>{copied ? "Link disalin!" : "Bagikan"}</span>
         </button>
+
         <button
           onClick={toggleBookmark}
           className={cn("ml-auto flex items-center transition-colors", bookmarked ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600")}
