@@ -9,20 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, transform: true }),
   );
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowed = [
-        'http://localhost:3000',
-        process.env.WEB_URL,
-      ].filter(Boolean);
-      if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  });
+  app.enableCors({ origin: true, credentials: true });
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
