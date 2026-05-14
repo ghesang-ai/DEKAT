@@ -1,10 +1,11 @@
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private notifs: NotificationsService) {}
 
   async create(userId: string, dto: CreatePostDto) {
     const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { status: true } });
@@ -123,22 +124,24 @@ export class PostsService {
         return { reacted: true, reactionType: type };
       }
     } else {
-      await this.prisma.$transaction([
+      const [, post] = await this.prisma.$transaction([
         this.prisma.like.create({ data: { userId, postId, reactionType: type } }),
         this.prisma.post.update({ where: { id: postId }, data: { likeCount: { increment: 1 } } }),
       ]);
+      this.notifs.createNotif({ userId: post.userId, actorId: userId, type: 'like', postId }).catch(() => {});
       return { reacted: true, reactionType: type };
     }
   }
 
   async addComment(userId: string, postId: string, content: string) {
-    const [comment] = await this.prisma.$transaction([
+    const [comment, post] = await this.prisma.$transaction([
       this.prisma.comment.create({
         data: { userId, postId, content },
         include: { user: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
       }),
       this.prisma.post.update({ where: { id: postId }, data: { commentCount: { increment: 1 } } }),
     ]);
+    this.notifs.createNotif({ userId: post.userId, actorId: userId, type: 'comment', postId }).catch(() => {});
     return comment;
   }
 

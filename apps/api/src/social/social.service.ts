@@ -1,9 +1,10 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class SocialService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private notifs: NotificationsService) {}
 
   async toggleFollow(followerId: string, followingId: string) {
     if (followerId === followingId) throw new BadRequestException('Tidak bisa follow diri sendiri');
@@ -20,6 +21,7 @@ export class SocialService {
         await tx.follow.delete({ where: { followerId_followingId: { followerId, followingId } } });
       } else {
         await tx.follow.create({ data: { followerId, followingId } });
+        this.notifs.createNotif({ userId: followingId, actorId: followerId, type: 'follow' }).catch(() => {});
       }
     });
 

@@ -35,6 +35,12 @@ enum GadgetCategory {
   other
 }
 
+enum NotificationType {
+  like
+  comment
+  follow
+}
+
 enum CompareStatus {
   pending
   processing
@@ -68,8 +74,10 @@ model User {
   comparisons    AiComparison[]
   invitesCreated Invite[]          @relation("InviteCreator")
   inviteUsed     Invite?           @relation("InviteUser")
-  ownedGadgets   UserGadget[]
-  bookmarks      Bookmark[]
+  ownedGadgets       UserGadget[]
+  bookmarks          Bookmark[]
+  notifications      Notification[] @relation("NotifRecipient")
+  actedNotifications Notification[] @relation("NotifActor")
 
   @@index([email])
   @@index([username])
@@ -121,9 +129,10 @@ model Post {
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   gadget    Gadget?    @relation(fields: [gadgetId], references: [id])
-  likes     Like[]
-  comments  Comment[]
-  bookmarks Bookmark[]
+  likes         Like[]
+  comments      Comment[]
+  bookmarks     Bookmark[]
+  notifications Notification[]
 
   @@index([userId])
   @@index([gadgetId])
@@ -233,4 +242,21 @@ model AiComparison {
 
   @@index([userId])
   @@index([status])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  actorId   String
+  type      NotificationType
+  postId    String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user  User  @relation("NotifRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor User  @relation("NotifActor", fields: [actorId], references: [id], onDelete: Cascade)
+  post  Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt(sort: Desc)])
 }

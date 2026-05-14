@@ -1,9 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class NotificationsService implements OnModuleInit {
   private initialized = false;
+
+  constructor(private prisma: PrismaService) {}
 
   onModuleInit() {
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
@@ -41,5 +44,32 @@ export class NotificationsService implements OnModuleInit {
     } catch (error: any) {
       console.warn(`FCM send failed: ${error.message}`);
     }
+  }
+
+  async createNotif(data: { userId: string; actorId: string; type: 'like' | 'comment' | 'follow'; postId?: string }) {
+    if (data.userId === data.actorId) return;
+    return this.prisma.notification.create({ data: data as any });
+  }
+
+  async getNotifications(userId: string) {
+    return this.prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 30,
+      include: {
+        actor: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+        post: { select: { id: true, content: true } },
+      },
+    });
+  }
+
+  async getUnreadCount(userId: string) {
+    const count = await this.prisma.notification.count({ where: { userId, read: false } });
+    return { count };
+  }
+
+  async markAllRead(userId: string) {
+    await this.prisma.notification.updateMany({ where: { userId, read: false }, data: { read: true } });
+    return { ok: true };
   }
 }
