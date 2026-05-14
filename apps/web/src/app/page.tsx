@@ -35,7 +35,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       {/* Navbar */}
       <nav className="border-b border-border px-6 py-4 flex items-center justify-between max-w-5xl mx-auto">
-        <span className="text-xl font-bold tracking-tight">DEKAT</span>
+        <div className="flex items-center gap-2">
+            <img src="/logo-icon.png" alt="DEKAT" className="h-8 w-8 object-contain" />
+            <img src="/logo-wordmark.png" alt="DEKAT" className="h-5 object-contain" />
+          </div>
         <div className="flex items-center gap-3">
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground font-medium">Masuk</Link>
           <Link href="/register" className="inline-flex items-center justify-center rounded-md bg-foreground text-background text-sm font-medium px-4 py-2 hover:bg-foreground/90 transition-colors">Daftar Gratis</Link>

@@ -72,7 +72,10 @@ export default function FeedPage() {
     <div>
       <header className="sticky top-0 bg-background/80 backdrop-blur-xl border-b border-border z-10 px-4 py-3">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xl font-bold tracking-tight">DEKAT</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo-icon.png" alt="DEKAT" className="h-8 w-8 object-contain" />
+            <img src="/logo-wordmark.png" alt="DEKAT" className="h-5 object-contain" />
+          </div>
         </div>
         <div className="flex gap-1">
           {(["semua", "following"] as Tab[]).map((t) => (
