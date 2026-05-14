@@ -75,7 +75,8 @@ Output HARUS berupa JSON valid sesuai schema yang diminta. Jangan tambahkan teks
         messages: [{ role: 'user', content: prompt }],
       });
 
-      const text = response.content[0].type === 'text' ? response.content[0].text : '{}';
+      const raw = response.content[0].type === 'text' ? response.content[0].text : '{}';
+      const text = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
       const result = JSON.parse(text);
 
       await this.prisma.aiComparison.update({
