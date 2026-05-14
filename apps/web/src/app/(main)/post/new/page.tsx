@@ -39,7 +39,7 @@ interface Gadget {
 
 export default function NewPostPage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { token, _hasHydrated } = useAuthStore();
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [gadgetSearch, setGadgetSearch] = useState("");
@@ -56,8 +56,9 @@ export default function NewPostPage() {
   const postType = watch("type");
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) router.push("/login");
-  }, [token, router]);
+  }, [token, router, _hasHydrated]);
 
   // Gadget search
   useEffect(() => {

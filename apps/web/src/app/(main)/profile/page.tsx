@@ -10,6 +10,7 @@ export default function MyProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) router.push("/login");
   }, [token, router]);
 

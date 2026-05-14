@@ -24,13 +24,14 @@ const CATEGORIES = ["semua", "smartphone", "laptop", "tablet", "wearable", "audi
 
 export default function ExplorePage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { token, _hasHydrated } = useAuthStore();
   const [gadgets, setGadgets] = useState<Gadget[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("semua");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) router.push("/login");
   }, [token, router]);
 
