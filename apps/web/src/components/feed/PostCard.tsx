@@ -10,11 +10,16 @@ import { cn } from "@/lib/utils";
 import { formatDistance } from "@/lib/time";
 
 const REACTIONS = [
-  { type: "love", emoji: "❤️", label: "Love" },
-  { type: "fire", emoji: "🔥", label: "Hot" },
-  { type: "wow",  emoji: "😮", label: "Wow" },
-  { type: "haha", emoji: "😂", label: "Haha" },
-  { type: "like", emoji: "👍", label: "Suka" },
+  { type: "love",    emoji: "❤️",  label: "Love" },
+  { type: "fire",    emoji: "🔥",  label: "Hot" },
+  { type: "wow",     emoji: "😮",  label: "Wow" },
+  { type: "haha",    emoji: "😂",  label: "Haha" },
+  { type: "like",    emoji: "👍",  label: "Suka" },
+  { type: "cool",    emoji: "😍",  label: "Keren" },
+  { type: "amazing", emoji: "🤩",  label: "Amazing" },
+  { type: "perfect", emoji: "💯",  label: "Perfect" },
+  { type: "rocket",  emoji: "🚀",  label: "Next Level" },
+  { type: "sad",     emoji: "😢",  label: "Sedih" },
 ];
 
 interface Post {
@@ -154,14 +159,14 @@ export function PostCard({ post }: { post: Post }) {
         {/* Reaction button */}
         <div className="relative" ref={pickerRef}>
           {showPicker && (
-            <div className="absolute bottom-10 left-0 bg-white rounded-2xl shadow-xl border border-gray-100 flex items-center gap-1 p-2 z-20">
+            <div className="absolute bottom-10 left-0 bg-white rounded-2xl shadow-xl border border-gray-100 grid grid-cols-5 gap-1 p-2 z-20 w-64">
               {REACTIONS.map((r) => (
                 <button
                   key={r.type}
                   onClick={() => react(r.type)}
                   title={r.label}
                   className={cn(
-                    "text-3xl w-14 h-14 flex items-center justify-center rounded-xl transition-all duration-150 hover:scale-125 hover:bg-gray-50",
+                    "text-2xl w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150 hover:scale-125 hover:bg-gray-50",
                     userReaction === r.type && "bg-red-50 scale-110"
                   )}
                 >
