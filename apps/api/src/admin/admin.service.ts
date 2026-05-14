@@ -115,6 +115,23 @@ export class AdminService {
     return { data, total, page, limit };
   }
 
+  async createGadget(data: { name: string; brand: string; category: string; imageUrl?: string; specs?: object }) {
+    return this.prisma.gadget.create({ data: { ...data, category: data.category as any, specs: data.specs ?? {} } });
+  }
+
+  async updateGadget(id: string, data: { name?: string; brand?: string; category?: string; imageUrl?: string; specs?: object }) {
+    const gadget = await this.prisma.gadget.findUnique({ where: { id } });
+    if (!gadget) throw new NotFoundException('Gadget tidak ditemukan');
+    return this.prisma.gadget.update({ where: { id }, data: { ...data, category: data.category as any } });
+  }
+
+  async deleteGadget(id: string) {
+    const gadget = await this.prisma.gadget.findUnique({ where: { id } });
+    if (!gadget) throw new NotFoundException('Gadget tidak ditemukan');
+    await this.prisma.gadget.delete({ where: { id } });
+    return { message: 'Gadget berhasil dihapus' };
+  }
+
   async getGadgets(search = '') {
     return this.prisma.gadget.findMany({
       where: search ? {

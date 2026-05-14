@@ -85,6 +85,24 @@ export class AdminController {
     return this.adminService.getGadgets(search);
   }
 
+  @Post('gadgets')
+  createGadget(@Body() body: { name: string; brand: string; category: string; imageUrl?: string; specs?: object }) {
+    return this.adminService.createGadget(body);
+  }
+
+  @Patch('gadgets/:id')
+  updateGadget(
+    @Param('id') id: string,
+    @Body() body: { name?: string; brand?: string; category?: string; imageUrl?: string; specs?: object },
+  ) {
+    return this.adminService.updateGadget(id, body);
+  }
+
+  @Delete('gadgets/:id')
+  deleteGadget(@Param('id') id: string) {
+    return this.adminService.deleteGadget(id);
+  }
+
   @Patch('gadgets/:id/trending')
   setGadgetTrending(
     @Param('id') id: string,
