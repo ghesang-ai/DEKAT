@@ -33,7 +33,7 @@ interface CompareResult {
 function ComparePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { token } = useAuthStore();
+  const { token, _hasHydrated } = useAuthStore();
 
   const [selected, setSelected] = useState<Gadget[]>([]);
   const [search, setSearch] = useState("");
@@ -45,8 +45,9 @@ function ComparePageInner() {
   const [gadgetMap, setGadgetMap] = useState<Record<string, Gadget>>({});
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) { router.push("/login"); return; }
-  }, [token, router]);
+  }, [token, router, _hasHydrated]);
 
   // Pre-select gadget from URL param
   useEffect(() => {
