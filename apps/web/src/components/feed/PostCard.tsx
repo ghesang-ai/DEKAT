@@ -154,14 +154,14 @@ export function PostCard({ post }: { post: Post }) {
         {/* Reaction button */}
         <div className="relative" ref={pickerRef}>
           {showPicker && (
-            <div className="absolute bottom-9 left-0 bg-white rounded-2xl shadow-xl border border-gray-100 flex items-center gap-0.5 p-1.5 z-20">
+            <div className="absolute bottom-10 left-0 bg-white rounded-2xl shadow-xl border border-gray-100 flex items-center gap-1 p-2 z-20">
               {REACTIONS.map((r) => (
                 <button
                   key={r.type}
                   onClick={() => react(r.type)}
                   title={r.label}
                   className={cn(
-                    "text-xl w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-150 hover:scale-125 hover:bg-gray-50",
+                    "text-3xl w-14 h-14 flex items-center justify-center rounded-xl transition-all duration-150 hover:scale-125 hover:bg-gray-50",
                     userReaction === r.type && "bg-red-50 scale-110"
                   )}
                 >
