@@ -15,6 +15,11 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  @Post('setup')
+  setup(@Body() dto: { email: string; username: string; displayName: string; password: string }) {
+    return this.authService.setupAdmin(dto);
+  }
+
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);

@@ -22,12 +22,19 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        username: dto.username,
-        displayName: dto.displayName,
-        passwordHash,
-      },
+      data: { email: dto.email, username: dto.username, displayName: dto.displayName, passwordHash },
+    });
+
+    return this.signTokens(user);
+  }
+
+  async setupAdmin(dto: { email: string; username: string; displayName: string; password: string }) {
+    const count = await this.prisma.user.count();
+    if (count > 0) throw new ConflictException('Setup sudah dilakukan. Gunakan halaman register biasa.');
+
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: { email: dto.email, username: dto.username, displayName: dto.displayName, passwordHash, role: 'admin' },
     });
 
     return this.signTokens(user);
@@ -46,16 +53,24 @@ export class AuthService {
   async getMe(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true, username: true, displayName: true,
-        email: true, avatarUrl: true, bio: true,
-        trustScore: true, role: true, createdAt: true,
-      },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, createdAt: true },
     });
   }
 
-  private signTokens(user: { id: string; email: string; role: string }) {
+  private async signTokens(user: { id: string; email: string; role: string; username: string; displayName: string; avatarUrl?: string | null; trustScore?: number }) {
     const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role as any };
-    return { accessToken: this.jwt.sign(payload) };
+    const token = this.jwt.sign(payload);
+    return {
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        displayName: user.displayName,
+        email: user.email,
+        avatarUrl: user.avatarUrl ?? null,
+        trustScore: user.trustScore ?? 0,
+        role: user.role,
+      },
+    };
   }
 }
