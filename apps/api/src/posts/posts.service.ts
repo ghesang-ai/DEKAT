@@ -28,6 +28,21 @@ export class PostsService {
     });
   }
 
+  async findAll(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const posts = await this.prisma.post.findMany({
+      skip,
+      take: limit,
+      include: {
+        user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
+        gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
+        _count: { select: { likes: true, comments: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return posts;
+  }
+
   async findFeed(userId: string, cursor?: string) {
     const following = await this.prisma.follow.findMany({
       where: { followerId: userId },

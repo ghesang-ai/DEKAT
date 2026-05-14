@@ -1,4 +1,6 @@
-import { Controller, Post, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -35,5 +37,11 @@ export class AuthController {
   @UseGuards(JwtGuard)
   completeOnboarding(@CurrentUser() user: JwtPayload, @Body() body: { gadgetId: string }) {
     return this.authService.completeOnboarding(user.sub, body.gadgetId);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtGuard)
+  updateProfile(@CurrentUser() user: JwtPayload, @Body() body: { displayName?: string; bio?: string; avatarUrl?: string }) {
+    return this.authService.updateProfile(user.sub, body);
   }
 }

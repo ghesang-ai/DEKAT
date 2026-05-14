@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, Query, UseGuards, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -18,6 +18,14 @@ export class PostsController {
   @Get('feed')
   getFeed(@CurrentUser() user: JwtPayload, @Query('cursor') cursor?: string) {
     return this.postsService.findFeed(user.sub, cursor);
+  }
+
+  @Get()
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+  ) {
+    return this.postsService.findAll(page, limit);
   }
 
   @Get(':id')

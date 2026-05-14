@@ -57,6 +57,19 @@ export class AuthService {
     });
   }
 
+  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string }) {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(data.displayName && { displayName: data.displayName }),
+        ...(data.bio !== undefined && { bio: data.bio }),
+        ...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl }),
+      },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, status: true, currentGadgetId: true },
+    });
+    return updated;
+  }
+
   async completeOnboarding(userId: string, gadgetId: string) {
     return this.prisma.user.update({
       where: { id: userId },
