@@ -50,7 +50,7 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
       try {
         const [pRes, postsRes] = await Promise.all([
           api.get(`/users/${username}`),
-          api.get(`/posts?username=${username}&limit=20`),
+          api.get(`/users/${username}/posts?limit=20`),
         ]);
         setProfile(pRes.data);
         setFollowing(pRes.data.isFollowing ?? false);

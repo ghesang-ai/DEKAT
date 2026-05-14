@@ -20,6 +20,11 @@ export class SocialController {
     return this.socialService.getProfile(username, user.sub);
   }
 
+  @Get('users/:username/posts')
+  getUserPosts(@Param('username') username: string, @Query('limit') limit = '20') {
+    return this.socialService.getUserPosts(username, parseInt(limit));
+  }
+
   @Get('feed/trending')
   getTrending(@Query('limit') limit = '10') {
     return this.socialService.getTrending(parseInt(limit));

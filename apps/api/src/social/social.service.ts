@@ -54,6 +54,20 @@ export class SocialService {
     return { ...user, isFollowing };
   }
 
+  async getUserPosts(username: string, limit = 20) {
+    const user = await this.prisma.user.findUnique({ where: { username }, select: { id: true } });
+    if (!user) throw new NotFoundException('User tidak ditemukan');
+    return this.prisma.post.findMany({
+      where: { userId: user.id },
+      include: {
+        user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
+        gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+  }
+
   async getTrending(limit = 10) {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return this.prisma.post.findMany({
