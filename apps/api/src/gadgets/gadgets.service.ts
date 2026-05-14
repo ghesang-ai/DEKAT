@@ -31,9 +31,11 @@ export class GadgetsService {
     });
   }
 
-  findTrending(ids: string[]) {
+  findTrending() {
     return this.prisma.gadget.findMany({
-      where: { id: { in: ids } },
+      where: { isTrending: true },
+      orderBy: { trendingOrder: 'asc' },
+      take: 6,
     });
   }
 

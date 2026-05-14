@@ -115,6 +115,34 @@ export class AdminService {
     return { data, total, page, limit };
   }
 
+  async getGadgets(search = '') {
+    return this.prisma.gadget.findMany({
+      where: search ? {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { brand: { contains: search, mode: 'insensitive' } },
+        ],
+      } : {},
+      orderBy: [{ isTrending: 'desc' }, { trendingOrder: 'asc' }, { reviewCount: 'desc' }],
+      take: 50,
+      select: { id: true, name: true, brand: true, category: true, imageUrl: true, isTrending: true, trendingOrder: true, avgScore: true, reviewCount: true },
+    });
+  }
+
+  async setGadgetTrending(gadgetId: string, isTrending: boolean) {
+    const gadget = await this.prisma.gadget.findUnique({ where: { id: gadgetId } });
+    if (!gadget) throw new NotFoundException('Gadget tidak ditemukan');
+
+    if (isTrending) {
+      const count = await this.prisma.gadget.count({ where: { isTrending: true } });
+      if (count >= 6) throw new ForbiddenException('Maksimal 6 gadget trending');
+      const maxOrder = await this.prisma.gadget.aggregate({ where: { isTrending: true }, _max: { trendingOrder: true } });
+      return this.prisma.gadget.update({ where: { id: gadgetId }, data: { isTrending: true, trendingOrder: (maxOrder._max.trendingOrder ?? 0) + 1 } });
+    } else {
+      return this.prisma.gadget.update({ where: { id: gadgetId }, data: { isTrending: false, trendingOrder: null } });
+    }
+  }
+
   async createInvite(adminId: string, count = 1) {
     const codes = await Promise.all(
       Array.from({ length: count }).map(() => {

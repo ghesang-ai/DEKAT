@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
-import { LayoutDashboard, FileText, Users, Ticket, LogOut, UserCheck } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Ticket, LogOut, UserCheck, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/admin/posts", label: "Moderasi Post", icon: FileText },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/invites", label: "Invite Code", icon: Ticket },
+  { href: "/admin/trending", label: "Gadget Trending", icon: Flame },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -80,6 +80,19 @@ export class AdminController {
     return this.adminService.getInvites(page, limit);
   }
 
+  @Get('gadgets')
+  getGadgets(@Query('search') search = '') {
+    return this.adminService.getGadgets(search);
+  }
+
+  @Patch('gadgets/:id/trending')
+  setGadgetTrending(
+    @Param('id') id: string,
+    @Body('isTrending') isTrending: boolean,
+  ) {
+    return this.adminService.setGadgetTrending(id, isTrending);
+  }
+
   @Post('invites')
   createInvites(
     @CurrentUser() user: JwtPayload,

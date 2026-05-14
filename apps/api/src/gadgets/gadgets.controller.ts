@@ -8,6 +8,11 @@ import { GadgetCategory } from '@prisma/client';
 export class GadgetsController {
   constructor(private gadgetsService: GadgetsService) {}
 
+  @Get('trending')
+  findTrending() {
+    return this.gadgetsService.findTrending();
+  }
+
   @Get()
   findAll(
     @Query('search') search = '',
