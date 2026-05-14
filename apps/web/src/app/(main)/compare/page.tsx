@@ -98,7 +98,7 @@ function ComparePageInner() {
       const compId = res.data.id;
       let done = false;
       let attempts = 0;
-      while (!done && attempts < 30) {
+      while (!done && attempts < 45) {
         await new Promise((r) => setTimeout(r, 2000));
         const poll = await api.get(`/ai/compare/${compId}`);
         if (poll.data.status === "done" || poll.data.status === "failed") {
