@@ -35,8 +35,9 @@ export class PostsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('type') type?: string,
+    @Query('search') search?: string,
   ) {
-    return this.postsService.findAll(page, limit, type);
+    return this.postsService.findAll(page, limit, type, search);
   }
 
   @Get(':id')

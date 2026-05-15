@@ -70,6 +70,21 @@ export class SocialService {
     });
   }
 
+  async searchUsers(search: string, limit = 10) {
+    return this.prisma.user.findMany({
+      where: search ? {
+        OR: [
+          { username: { contains: search, mode: 'insensitive' } },
+          { displayName: { contains: search, mode: 'insensitive' } },
+        ],
+        status: 'active',
+      } : { status: 'active' },
+      select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true },
+      orderBy: { trustScore: 'desc' },
+      take: limit,
+    });
+  }
+
   async getTrending(limit = 10) {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return this.prisma.post.findMany({

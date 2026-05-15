@@ -3,8 +3,7 @@
 import { Suspense } from "react";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
-import { ArrowLeft, X, Search, Sparkles, ChevronRight } from "lucide-react";
+import { ArrowLeft, X, Search, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { Button } from "@/components/ui/button";
@@ -136,7 +135,7 @@ function ComparePageInner() {
             {selected.map((g) => (
               <div key={g.id} className="flex items-center gap-2 bg-muted rounded-xl px-3 py-2">
                 {g.imageUrl && (
-                  <Image src={g.imageUrl} alt={g.name} width={20} height={20} className="object-contain" />
+                  <img src={g.imageUrl} alt={g.name} className="w-5 h-5 object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                 )}
                 <span className="text-xs font-medium">{g.brand} {g.name}</span>
                 <button onClick={() => removeGadget(g.id)} className="text-muted-foreground hover:text-foreground ml-1">
@@ -176,7 +175,7 @@ function ComparePageInner() {
                     >
                       <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
                         {g.imageUrl
-                          ? <Image src={g.imageUrl} alt={g.name} width={32} height={32} className="object-contain" />
+                          ? <img src={g.imageUrl} alt={g.name} className="w-8 h-8 object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                           : <span className="text-sm">📱</span>
                         }
                       </div>

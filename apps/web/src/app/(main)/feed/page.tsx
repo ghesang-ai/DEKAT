@@ -117,7 +117,9 @@ export default function FeedPage() {
             <input
               type="text"
               placeholder="Cari gadget, teman, atau topik..."
-              className="w-full bg-white rounded-full py-2.5 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-400 outline-none"
+              readOnly
+              onClick={() => router.push("/search")}
+              className="w-full bg-white rounded-full py-2.5 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-400 outline-none cursor-pointer"
             />
           </div>
         </div>

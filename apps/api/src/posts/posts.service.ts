@@ -50,12 +50,15 @@ export class PostsService {
     return post;
   }
 
-  async findAll(page = 1, limit = 20, type?: string) {
+  async findAll(page = 1, limit = 20, type?: string, search?: string) {
     const skip = (page - 1) * limit;
     return this.prisma.post.findMany({
       skip,
       take: limit,
-      where: type ? { type: type as any } : undefined,
+      where: {
+        ...(type ? { type: type as any } : {}),
+        ...(search ? { content: { contains: search, mode: 'insensitive' as const } } : {}),
+      },
       include: {
         user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
         gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },

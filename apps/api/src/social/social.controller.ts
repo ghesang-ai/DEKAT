@@ -15,6 +15,11 @@ export class SocialController {
     return this.socialService.toggleFollow(user.sub, target.id);
   }
 
+  @Get('users')
+  searchUsers(@Query('search') search = '', @Query('limit') limit = '10') {
+    return this.socialService.searchUsers(search, parseInt(limit));
+  }
+
   @Get('users/:username')
   getProfile(@Param('username') username: string, @CurrentUser() user: JwtPayload) {
     return this.socialService.getProfile(username, user.sub);

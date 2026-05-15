@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, PlusCircle, GitCompare, User } from "lucide-react";
+import { Home, Compass, PlusCircle, Users, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/feed", label: "Beranda", icon: Home },
   { href: "/explore", label: "Jelajah", icon: Compass },
   { href: "/post/new", label: "Post", icon: PlusCircle },
-  { href: "/compare", label: "Compare", icon: GitCompare },
+  { href: "/community", label: "Komunitas", icon: Users },
   { href: "/profile", label: "Profil", icon: User },
 ];
 
