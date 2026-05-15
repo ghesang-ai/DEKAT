@@ -28,7 +28,7 @@ function CreatePostBox() {
         {[
           { icon: "🖼️", label: "Foto",    path: "/post/new" },
           { icon: "🎬", label: "Video",   path: "/post/new" },
-          { icon: "📊", label: "Polling", path: "/post/new?poll=1" },
+          { icon: "📊", label: "Polling", path: "/post/poll" },
           { icon: "#️⃣", label: "Topik",   path: "/post/new" },
         ].map(({ icon, label, path }) => (
           <button key={label} onClick={() => router.push(path)} className="flex items-center gap-1.5 text-xs text-gray-500 font-medium hover:text-gray-700 flex-1 justify-center py-1">
