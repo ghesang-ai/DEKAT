@@ -71,7 +71,7 @@ export function NotificationBell() {
 
   return (
     <div className="relative" ref={panelRef}>
-      <button onClick={openPanel} className="relative text-white opacity-90 hover:opacity-100 p-1">
+      <button onClick={openPanel} className="relative text-white p-2 rounded-xl transition-all duration-150 hover:bg-white/20 active:bg-white/30 active:scale-95">
         <Bell size={22} />
         {unread > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-white text-[#d42b2b] text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none">
