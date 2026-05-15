@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, ChevronDown, Search, X, Sparkles, Lightbulb, Wand2, ImagePlus, Loader2 } from "lucide-react";
@@ -25,7 +25,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
 
 interface Gadget { id: string; name: string; brand: string; imageUrl: string | null; category: string; }
 
-export default function NewPostPage() {
+function NewPostPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token, user, _hasHydrated } = useAuthStore();
@@ -454,5 +454,13 @@ export default function NewPostPage() {
         <div className="h-6" />
       </div>
     </div>
+  );
+}
+
+export default function NewPostPage() {
+  return (
+    <Suspense>
+      <NewPostPageInner />
+    </Suspense>
   );
 }
