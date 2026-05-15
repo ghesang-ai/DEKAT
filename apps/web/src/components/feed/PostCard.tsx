@@ -268,7 +268,7 @@ export function PostCard({ post }: { post: Post }) {
       {post.gadget && (
         <Link href={`/gadget/${post.gadget.id}`} className="flex items-center gap-2 bg-muted rounded-xl px-3 py-2">
           {post.gadget.imageUrl && (
-            <Image src={post.gadget.imageUrl} alt={post.gadget.name} width={32} height={32} className="rounded-lg object-contain" />
+            <img src={post.gadget.imageUrl} alt={post.gadget.name} className="w-8 h-8 rounded-lg object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
           )}
           <p className="text-xs font-medium">{post.gadget.brand} {post.gadget.name}</p>
           {post.rating && (

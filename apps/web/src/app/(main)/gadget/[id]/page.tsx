@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Star, GitCompare, Plus, Check } from "lucide-react";
 import { api } from "@/lib/api";
@@ -106,10 +105,9 @@ export default function GadgetDetailPage() {
         <div className="flex gap-4 items-start">
           <div className="w-24 h-24 rounded-2xl bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
             {gadget.imageUrl ? (
-              <Image src={gadget.imageUrl} alt={gadget.name} width={96} height={96} className="object-contain" />
-            ) : (
-              <span className="text-3xl">📱</span>
-            )}
+              <img src={gadget.imageUrl} alt={gadget.name} className="w-24 h-24 object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; (e.currentTarget.nextSibling as HTMLElement).style.display = "block"; }} />
+            ) : null}
+            <span className="text-3xl" style={{ display: gadget.imageUrl ? "none" : "block" }}>📱</span>
           </div>
           <div className="flex-1 space-y-1.5">
             <p className="text-xs text-muted-foreground">{gadget.brand}</p>

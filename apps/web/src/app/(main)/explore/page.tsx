@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Search, Star } from "lucide-react";
 import { api } from "@/lib/api";
@@ -104,10 +103,20 @@ export default function ExplorePage() {
                 <div className="rounded-2xl border border-border bg-card p-3 space-y-2.5 hover:bg-muted transition-colors">
                   <div className="w-full aspect-square rounded-xl bg-muted flex items-center justify-center overflow-hidden">
                     {g.imageUrl ? (
-                      <Image src={g.imageUrl} alt={g.name} width={100} height={100} className="object-contain w-full h-full p-2" />
-                    ) : (
-                      <span className="text-4xl">📱</span>
-                    )}
+                      <img
+                        src={g.imageUrl}
+                        alt={g.name}
+                        className="object-contain w-full h-full p-2"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                          (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <span
+                      className="text-4xl items-center justify-center"
+                      style={{ display: g.imageUrl ? "none" : "flex" }}
+                    >📱</span>
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] text-muted-foreground">{g.brand}</p>
