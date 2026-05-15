@@ -26,12 +26,12 @@ function CreatePostBox() {
       </div>
       <div className="flex gap-2 border-t border-gray-100 pt-3">
         {[
-          { icon: "🖼️", label: "Foto" },
-          { icon: "🎬", label: "Video" },
-          { icon: "📊", label: "Polling" },
-          { icon: "#️⃣", label: "Topik" },
-        ].map(({ icon, label }) => (
-          <button key={label} onClick={() => router.push("/post/new")} className="flex items-center gap-1.5 text-xs text-gray-500 font-medium hover:text-gray-700 flex-1 justify-center py-1">
+          { icon: "🖼️", label: "Foto",    path: "/post/new" },
+          { icon: "🎬", label: "Video",   path: "/post/new" },
+          { icon: "📊", label: "Polling", path: "/post/new?poll=1" },
+          { icon: "#️⃣", label: "Topik",   path: "/post/new" },
+        ].map(({ icon, label, path }) => (
+          <button key={label} onClick={() => router.push(path)} className="flex items-center gap-1.5 text-xs text-gray-500 font-medium hover:text-gray-700 flex-1 justify-center py-1">
             <span>{icon}</span>{label}
           </button>
         ))}

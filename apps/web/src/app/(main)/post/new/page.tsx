@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, ChevronDown, Search, X, Sparkles, Lightbulb, Wand2, ImagePlus, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
@@ -27,6 +27,7 @@ interface Gadget { id: string; name: string; brand: string; imageUrl: string | n
 
 export default function NewPostPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { token, user, _hasHydrated } = useAuthStore();
 
   const [postType, setPostType] = useState<string>("discussion");
@@ -40,11 +41,15 @@ export default function NewPostPage() {
   const [allowComments, setAllowComments] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Poll state
-  const [showPoll, setShowPoll] = useState(false);
+  // Poll state — auto-aktif jika dari query ?poll=1
+  const [showPoll, setShowPoll] = useState(() => false);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [pollDuration, setPollDuration] = useState(3);
+
+  useEffect(() => {
+    if (searchParams.get("poll") === "1") setShowPoll(true);
+  }, [searchParams]);
 
   // Gadget section
   const [trendingGadgets, setTrendingGadgets] = useState<Gadget[]>([]);
