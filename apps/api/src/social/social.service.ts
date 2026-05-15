@@ -38,8 +38,8 @@ export class SocialService {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
-        id: true, username: true, displayName: true, avatarUrl: true, coverUrl: true,
-        bio: true, location: true, website: true, trustScore: true, createdAt: true,
+        id: true, username: true, displayName: true, avatarUrl: true,
+        bio: true, trustScore: true, createdAt: true,
         _count: { select: { posts: true, followers: true, following: true } },
       },
     });
