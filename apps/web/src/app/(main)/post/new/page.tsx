@@ -40,6 +40,12 @@ export default function NewPostPage() {
   const [allowComments, setAllowComments] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Poll state
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [pollDuration, setPollDuration] = useState(3);
+
   // Gadget section
   const [trendingGadgets, setTrendingGadgets] = useState<Gadget[]>([]);
   const [gadgetSearch, setGadgetSearch] = useState("");
@@ -82,6 +88,9 @@ export default function NewPostPage() {
 
   const submit = async () => {
     if (!content.trim()) { textareaRef.current?.focus(); return; }
+    if (showPoll && !pollQuestion.trim()) { alert("Tulis pertanyaan polling terlebih dahulu."); return; }
+    if (showPoll && pollOptions.filter((o) => o.trim()).length < 2) { alert("Minimal 2 pilihan polling."); return; }
+
     setSubmitting(true);
     try {
       await api.post("/posts", {
@@ -90,6 +99,13 @@ export default function NewPostPage() {
         gadgetId: selectedGadget?.id,
         rating: postType === "review" ? ratingValue || undefined : undefined,
         mediaUrls,
+        ...(showPoll && {
+          poll: {
+            question: pollQuestion.trim(),
+            options: pollOptions.filter((o) => o.trim()),
+            durationDays: pollDuration,
+          },
+        }),
       });
       router.push("/feed");
     } catch { alert("Gagal membuat post. Coba lagi."); }
@@ -340,13 +356,87 @@ export default function NewPostPage() {
             onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ""; }} />
         </div>
 
+        {/* Poll builder */}
+        {showPoll && (
+          <div className="bg-white rounded-2xl px-4 py-3 space-y-3 border-2 border-[#d42b2b]/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-base">📊</span>
+                <span className="text-sm font-bold text-gray-800">Polling</span>
+              </div>
+              <button onClick={() => { setShowPoll(false); setPollQuestion(""); setPollOptions(["", ""]); setPollDuration(3); }}
+                className="text-gray-400 hover:text-gray-600 p-1">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Pertanyaan Poll</p>
+              <textarea
+                value={pollQuestion}
+                onChange={(e) => setPollQuestion(e.target.value)}
+                rows={2}
+                maxLength={150}
+                placeholder="Tulis pertanyaan polling kamu..."
+                className="w-full text-sm px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100 focus:border-[#d42b2b] outline-none resize-none"
+              />
+              <p className="text-right text-[10px] text-gray-400 mt-0.5">{pollQuestion.length}/150</p>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pilihan (min. 2, maks. 5)</p>
+              {pollOptions.map((opt, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#d42b2b] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                  <input
+                    type="text"
+                    value={opt}
+                    onChange={(e) => setPollOptions((p) => p.map((v, j) => j === i ? e.target.value : v))}
+                    placeholder={i < 2 ? `Pilihan ${i + 1}` : `Pilihan ${i + 1} (opsional)`}
+                    maxLength={80}
+                    className="flex-1 text-sm px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 focus:border-gray-300 outline-none"
+                  />
+                  {i >= 2 && (
+                    <button onClick={() => setPollOptions((p) => p.filter((_, j) => j !== i))} className="text-gray-400 hover:text-gray-600">
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              {pollOptions.length < 5 && (
+                <button onClick={() => setPollOptions((p) => [...p, ""])}
+                  className="w-full text-xs text-[#d42b2b] font-semibold py-2 border border-dashed border-[#d42b2b]/40 rounded-xl hover:bg-red-50 transition-colors">
+                  + Tambah Pilihan
+                </button>
+              )}
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Durasi</p>
+              <div className="flex gap-2">
+                {[1, 3, 7, 14].map((d) => (
+                  <button key={d} onClick={() => setPollDuration(d)}
+                    className={cn("flex-1 py-2 rounded-xl text-xs font-bold transition-colors",
+                      pollDuration === d ? "bg-[#d42b2b] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")}>
+                    {d} Hari
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Extra options */}
         <div className="bg-white rounded-2xl px-4 py-3">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Opsi Lainnya</p>
           <div className="flex items-center justify-between">
             <div className="flex gap-5">
+              <button onClick={() => setShowPoll((p) => !p)}
+                className={cn("flex flex-col items-center gap-1 transition-colors", showPoll ? "text-[#d42b2b]" : "text-gray-400 hover:text-gray-600")}>
+                <span className="text-xl">📊</span>
+                <span className="text-[9px] font-medium">Polling</span>
+              </button>
               {[
-                { emoji: "📊", label: "Polling" },
                 { emoji: "📍", label: "Lokasi" },
                 { emoji: "👥", label: "Tag Teman" },
                 { emoji: "🕐", label: "Jadwalkan" },

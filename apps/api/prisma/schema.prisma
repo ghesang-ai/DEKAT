@@ -78,6 +78,7 @@ model User {
   bookmarks          Bookmark[]
   notifications      Notification[] @relation("NotifRecipient")
   actedNotifications Notification[] @relation("NotifActor")
+  pollVotes          PollVote[]
 
   @@index([email])
   @@index([username])
@@ -133,10 +134,51 @@ model Post {
   comments      Comment[]
   bookmarks     Bookmark[]
   notifications Notification[]
+  poll          Poll?
 
   @@index([userId])
   @@index([gadgetId])
   @@index([createdAt(sort: Desc)])
+}
+
+model Poll {
+  id        String   @id @default(uuid())
+  postId    String   @unique
+  question  String
+  endsAt    DateTime
+  createdAt DateTime @default(now())
+
+  post    Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+}
+
+model PollOption {
+  id        String @id @default(uuid())
+  pollId    String
+  text      String
+  voteCount Int    @default(0)
+  position  Int
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id        String   @id @default(uuid())
+  userId    String
+  pollId    String
+  optionId  String
+  createdAt DateTime @default(now())
+
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pollId])
+  @@index([pollId])
 }
 
 model Like {

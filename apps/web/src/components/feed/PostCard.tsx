@@ -29,6 +29,22 @@ interface Comment {
   user: { id: string; username: string; displayName: string; avatarUrl: string | null };
 }
 
+interface PollOption {
+  id: string;
+  text: string;
+  voteCount: number;
+  position: number;
+}
+
+interface Poll {
+  id: string;
+  question: string;
+  endsAt: string;
+  totalVotes: number;
+  userVote: string | null;
+  options: PollOption[];
+}
+
 interface Post {
   id: string;
   content: string;
@@ -40,6 +56,7 @@ interface Post {
   createdAt: string;
   userReaction?: string | null;
   isBookmarked?: boolean;
+  poll?: Poll | null;
   user: {
     id: string;
     username: string;
@@ -55,6 +72,86 @@ interface Post {
   } | null;
 }
 
+function PollCard({ poll: initialPoll, postId }: { poll: Poll; postId: string }) {
+  const [poll, setPoll] = useState(initialPoll);
+  const [voting, setVoting] = useState(false);
+  const hasVoted = poll.userVote !== null;
+  const isExpired = new Date(poll.endsAt) < new Date();
+
+  const vote = async (optionId: string) => {
+    if (hasVoted || isExpired || voting) return;
+    setVoting(true);
+    try {
+      const res = await api.post(`/posts/${postId}/poll/vote`, { optionId });
+      setPoll(res.data);
+    } catch {}
+    finally { setVoting(false); }
+  };
+
+  const maxVotes = Math.max(...poll.options.map((o) => o.voteCount), 1);
+
+  return (
+    <div className="border border-gray-100 rounded-2xl p-3 space-y-2.5">
+      <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+        <span>📊</span>
+        <span>POLLING</span>
+        <span className="mx-1">·</span>
+        <span>{isExpired ? "Polling berakhir" : `${daysLeft(poll.endsAt)} tersisa`}</span>
+      </div>
+      <p className="text-sm font-semibold text-gray-800">{poll.question}</p>
+      <div className="space-y-2">
+        {poll.options.map((opt) => {
+          const pct = poll.totalVotes > 0 ? Math.round((opt.voteCount / poll.totalVotes) * 100) : 0;
+          const isWinner = hasVoted && opt.voteCount === maxVotes && poll.totalVotes > 0;
+          const isMyVote = poll.userVote === opt.id;
+
+          if (!hasVoted && !isExpired) {
+            return (
+              <button
+                key={opt.id}
+                onClick={() => vote(opt.id)}
+                disabled={voting}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-200 hover:border-[#d42b2b] hover:bg-red-50 transition-all text-left disabled:opacity-60"
+              >
+                <span className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0" />
+                <span className="text-sm text-gray-800">{opt.text}</span>
+              </button>
+            );
+          }
+
+          return (
+            <div key={opt.id} className={cn("rounded-xl overflow-hidden border", isMyVote ? "border-[#d42b2b]" : "border-gray-100")}>
+              <div className="relative px-3 py-2.5">
+                <div
+                  className={cn("absolute inset-0 rounded-xl", isMyVote ? "bg-red-50" : isWinner ? "bg-blue-50" : "bg-gray-50")}
+                  style={{ width: `${pct}%`, transition: "width 0.6s ease" }}
+                />
+                <div className="relative flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    {isMyVote && <span className="text-[#d42b2b] text-xs font-bold">✓</span>}
+                    <span className="text-sm text-gray-800">{opt.text}</span>
+                  </div>
+                  <span className={cn("text-xs font-bold flex-shrink-0", isMyVote ? "text-[#d42b2b]" : "text-gray-500")}>{pct}%</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[10px] text-gray-400">{poll.totalVotes} suara</p>
+    </div>
+  );
+}
+
+function daysLeft(endsAt: string) {
+  const ms = new Date(endsAt).getTime() - Date.now();
+  if (ms <= 0) return "0 hari";
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  if (days > 0) return `${days} hari ${hours} jam`;
+  return `${hours} jam`;
+}
+
 export function PostCard({ post }: { post: Post }) {
   const [userReaction, setUserReaction] = useState<string | null>(post.userReaction ?? null);
   const [likeCount, setLikeCount] = useState(post.likeCount);
@@ -62,7 +159,6 @@ export function PostCard({ post }: { post: Post }) {
   const [showPicker, setShowPicker] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Comments
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentCount, setCommentCount] = useState(post.commentCount);
@@ -185,6 +281,9 @@ export function PostCard({ post }: { post: Post }) {
       )}
 
       <p className="text-sm leading-relaxed">{post.content}</p>
+
+      {/* Poll */}
+      {post.poll && <PollCard poll={post.poll} postId={post.id} />}
 
       {/* Media */}
       {post.mediaUrls.length > 0 && (

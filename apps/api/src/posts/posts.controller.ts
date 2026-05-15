@@ -61,6 +61,15 @@ export class PostsController {
     return this.postsService.toggleBookmark(user.sub, id);
   }
 
+  @Post(':id/poll/vote')
+  votePoll(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body('optionId') optionId: string,
+  ) {
+    return this.postsService.votePoll(user.sub, id, optionId);
+  }
+
   @Get('bookmarks/me')
   getBookmarks(@CurrentUser() user: JwtPayload) {
     return this.postsService.getBookmarks(user.sub);
