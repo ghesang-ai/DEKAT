@@ -56,7 +56,10 @@ model User {
   phone        String?  @db.VarChar(20)
   passwordHash String?
   avatarUrl    String?
+  coverUrl     String?
   bio          String?
+  location     String?  @db.VarChar(100)
+  website      String?  @db.VarChar(200)
   trustScore   Float    @default(0)
   role         UserRole   @default(user)
   status       UserStatus @default(pending)

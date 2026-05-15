@@ -53,19 +53,22 @@ export class AuthService {
   async getMe(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, status: true, currentGadgetId: true, createdAt: true },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true, createdAt: true },
     });
   }
 
-  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string }) {
+  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string; coverUrl?: string; location?: string; website?: string }) {
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
         ...(data.displayName && { displayName: data.displayName }),
         ...(data.bio !== undefined && { bio: data.bio }),
         ...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl }),
+        ...(data.coverUrl !== undefined && { coverUrl: data.coverUrl }),
+        ...(data.location !== undefined && { location: data.location }),
+        ...(data.website !== undefined && { website: data.website }),
       },
-      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, bio: true, trustScore: true, role: true, status: true, currentGadgetId: true },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true },
     });
     return updated;
   }
