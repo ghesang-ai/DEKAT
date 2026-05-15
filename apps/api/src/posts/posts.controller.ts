@@ -20,12 +20,23 @@ export class PostsController {
     return this.postsService.findFeed(user.sub, cursor);
   }
 
+  @Get('trending')
+  getTrending(
+    @CurrentUser() user: JwtPayload,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('type') type?: string,
+  ) {
+    return this.postsService.findTrending(user.sub, page, limit, type);
+  }
+
   @Get()
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('type') type?: string,
   ) {
-    return this.postsService.findAll(page, limit);
+    return this.postsService.findAll(page, limit, type);
   }
 
   @Get(':id')

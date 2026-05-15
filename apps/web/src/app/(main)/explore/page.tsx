@@ -2,136 +2,134 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Search, Star } from "lucide-react";
+import { Search, TrendingUp, Star, MessageCircle, Heart } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { PostCard } from "@/components/feed/PostCard";
+import { cn } from "@/lib/utils";
 
-interface Gadget {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  imageUrl: string | null;
-  avgScore: number;
-  reviewCount: number;
-}
-
-const CATEGORIES = ["semua", "smartphone", "laptop", "tablet", "wearable", "audio", "other"];
+const FILTERS = [
+  { value: "",           label: "Semua" },
+  { value: "review",     label: "⭐ Review" },
+  { value: "photo",      label: "📷 Foto" },
+  { value: "discussion", label: "💬 Diskusi" },
+  { value: "video",      label: "🎬 Video" },
+] as const;
 
 export default function ExplorePage() {
   const router = useRouter();
   const { token, _hasHydrated } = useAuthStore();
-  const [gadgets, setGadgets] = useState<Gadget[]>([]);
+  const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("semua");
+  const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     if (!_hasHydrated) return;
     if (!token) router.push("/login");
-  }, [token, router]);
+  }, [token, router, _hasHydrated]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (p: number, currentFilter: string, currentSearch: string) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (search) params.set("search", search);
-      if (category !== "semua") params.set("category", category);
-      const res = await api.get(`/gadgets?${params}`);
-      setGadgets(res.data.data ?? res.data);
+      const params = new URLSearchParams({ page: String(p), limit: "15" });
+      if (currentFilter) params.set("type", currentFilter);
+      if (currentSearch.trim()) params.set("search", currentSearch.trim());
+      const endpoint = currentSearch.trim() ? `/posts?${params}` : `/posts/trending?${params}`;
+      const res = await api.get(endpoint);
+      const data = res.data.data ?? res.data;
+      if (p === 1) setPosts(data);
+      else setPosts((prev) => [...prev, ...data]);
+      setHasMore(data.length === 15);
     } catch {
-      setGadgets([]);
+      if (p === 1) setPosts([]);
     } finally {
       setLoading(false);
     }
-  }, [search, category]);
+  }, []);
 
   useEffect(() => {
     if (!token) return;
-    const t = setTimeout(load, 300);
+    setPage(1);
+    setPosts([]);
+    const t = setTimeout(() => load(1, filter, search), search ? 400 : 0);
     return () => clearTimeout(t);
-  }, [load, token]);
+  }, [token, filter, search, load]);
+
+  const loadMore = () => {
+    const next = page + 1;
+    setPage(next);
+    load(next, filter, search);
+  };
 
   return (
-    <div>
-      <header className="sticky top-0 bg-background/80 backdrop-blur-xl border-b border-border z-10 px-4 py-3 space-y-3">
-        <span className="text-xl font-bold tracking-tight">Jelajah</span>
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-8 text-sm h-9"
-            placeholder="Cari gadget..."
+    <div className="bg-[#f5f5f5] min-h-screen">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-[#c0281f] px-4 pt-4 pb-3">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp size={20} className="text-white" />
+          <h1 className="text-white font-bold text-lg">Jelajah</h1>
+        </div>
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari postingan, gadget, topik..."
+            className="w-full bg-white rounded-full py-2.5 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-400 outline-none"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
-          {CATEGORIES.map((cat) => (
+        {/* Filter chips */}
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+          {FILTERS.map((f) => (
             <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${
-                category === cat
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={cn(
+                "flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                filter === f.value
+                  ? "bg-white text-[#c0281f]"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              )}
             >
-              {cat}
+              {f.label}
             </button>
           ))}
         </div>
       </header>
 
-      <div className="p-4">
-        {loading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse h-44" />
-            ))}
+      <div className="px-3 pt-3 pb-24 space-y-3">
+        {!search && !filter && (
+          <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3">
+            <TrendingUp size={16} className="text-[#d42b2b]" />
+            <p className="text-sm font-semibold text-gray-700">Post Trending Minggu Ini</p>
           </div>
-        ) : gadgets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-2 text-muted-foreground">
-            <p className="text-sm">Gadget tidak ditemukan</p>
+        )}
+
+        {loading && page === 1 ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-6 h-6 border-2 border-[#d42b2b] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-2 text-gray-400">
+            <p className="text-sm">Belum ada postingan</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {gadgets.map((g) => (
-              <Link key={g.id} href={`/gadget/${g.id}`}>
-                <div className="rounded-2xl border border-border bg-card p-3 space-y-2.5 hover:bg-muted transition-colors">
-                  <div className="w-full aspect-square rounded-xl bg-muted flex items-center justify-center overflow-hidden">
-                    {g.imageUrl ? (
-                      <img
-                        src={g.imageUrl}
-                        alt={g.name}
-                        className="object-contain w-full h-full p-2"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).style.display = "none";
-                          (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
-                        }}
-                      />
-                    ) : null}
-                    <span
-                      className="text-4xl items-center justify-center"
-                      style={{ display: g.imageUrl ? "none" : "flex" }}
-                    >📱</span>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-muted-foreground">{g.brand}</p>
-                    <p className="text-xs font-semibold leading-tight line-clamp-2">{g.name}</p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 capitalize">{g.category}</Badge>
-                      <div className="flex items-center gap-0.5 text-amber-500">
-                        <Star size={10} fill="currentColor" />
-                        <span className="text-[10px] font-semibold">{g.avgScore.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          posts.map((post) => <PostCard key={post.id} post={post} />)
+        )}
+
+        {hasMore && posts.length > 0 && !loading && (
+          <button onClick={loadMore} className="w-full py-3 text-sm text-gray-500 hover:text-gray-700">
+            Muat lebih banyak
+          </button>
+        )}
+        {loading && page > 1 && (
+          <div className="flex justify-center py-3">
+            <div className="w-5 h-5 border-2 border-[#d42b2b] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>

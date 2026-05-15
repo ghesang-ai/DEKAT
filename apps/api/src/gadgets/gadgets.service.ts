@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GadgetCategory } from '@prisma/client';
 
@@ -7,6 +7,13 @@ interface FindAllOptions {
   category?: GadgetCategory;
   sort?: 'trending' | 'default';
   limit?: number;
+}
+
+interface CreateGadgetData {
+  name: string;
+  brand: string;
+  category: GadgetCategory;
+  imageUrl?: string;
 }
 
 @Injectable()
@@ -44,6 +51,22 @@ export class GadgetsService {
       where: { id },
       include: {
         _count: { select: { posts: true } },
+      },
+    });
+  }
+
+  async create(data: CreateGadgetData) {
+    const existing = await this.prisma.gadget.findFirst({
+      where: { name: { equals: data.name, mode: 'insensitive' }, brand: { equals: data.brand, mode: 'insensitive' } },
+    });
+    if (existing) throw new ConflictException('Gadget sudah ada di database');
+    return this.prisma.gadget.create({
+      data: {
+        name: data.name.trim(),
+        brand: data.brand.trim(),
+        category: data.category,
+        imageUrl: data.imageUrl ?? null,
+        specs: {},
       },
     });
   }

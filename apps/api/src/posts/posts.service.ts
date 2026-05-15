@@ -50,11 +50,12 @@ export class PostsService {
     return post;
   }
 
-  async findAll(page = 1, limit = 20) {
+  async findAll(page = 1, limit = 20, type?: string) {
     const skip = (page - 1) * limit;
     return this.prisma.post.findMany({
       skip,
       take: limit,
+      where: type ? { type: type as any } : undefined,
       include: {
         user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
         gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
@@ -63,6 +64,39 @@ export class PostsService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findTrending(userId: string, page = 1, limit = 20, type?: string) {
+    const skip = (page - 1) * limit;
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const posts = await this.prisma.post.findMany({
+      skip,
+      take: limit,
+      where: {
+        createdAt: { gte: sevenDaysAgo },
+        ...(type ? { type: type as any } : {}),
+      },
+      include: {
+        user: { select: { id: true, username: true, displayName: true, avatarUrl: true, trustScore: true } },
+        gadget: { select: { id: true, name: true, brand: true, imageUrl: true } },
+        poll: {
+          include: {
+            ...POLL_INCLUDE,
+            votes: { where: { userId }, select: { optionId: true } },
+          },
+        },
+        likes: { where: { userId }, select: { reactionType: true } },
+        bookmarks: { where: { userId }, select: { userId: true } },
+      },
+      orderBy: [{ likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }],
+    });
+
+    return posts.map(({ likes, bookmarks, poll, ...p }) => ({
+      ...p,
+      userReaction: likes[0]?.reactionType ?? null,
+      isBookmarked: bookmarks.length > 0,
+      poll: poll ? this.formatPoll(poll, poll.votes?.[0]?.optionId ?? null) : null,
+    }));
   }
 
   async findFeed(userId: string, cursor?: string) {

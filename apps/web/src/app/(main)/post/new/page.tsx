@@ -25,6 +25,15 @@ const CATEGORY_EMOJI: Record<string, string> = {
 
 interface Gadget { id: string; name: string; brand: string; imageUrl: string | null; category: string; }
 
+const GADGET_CATEGORIES = [
+  { value: "smartphone", label: "📱 Smartphone" },
+  { value: "laptop",     label: "💻 Laptop" },
+  { value: "tablet",     label: "📟 Tablet" },
+  { value: "wearable",   label: "⌚ Wearable" },
+  { value: "audio",      label: "🎧 Audio" },
+  { value: "other",      label: "🔌 Lainnya" },
+];
+
 function NewPostPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,6 +65,14 @@ function NewPostPageInner() {
   const [gadgetSearch, setGadgetSearch] = useState("");
   const [gadgetResults, setGadgetResults] = useState<Gadget[]>([]);
   const [showGadgetSearch, setShowGadgetSearch] = useState(false);
+  const [searchDone, setSearchDone] = useState(false);
+
+  // New gadget form
+  const [showNewGadgetForm, setShowNewGadgetForm] = useState(false);
+  const [newGadgetName, setNewGadgetName] = useState("");
+  const [newGadgetBrand, setNewGadgetBrand] = useState("");
+  const [newGadgetCategory, setNewGadgetCategory] = useState("smartphone");
+  const [savingGadget, setSavingGadget] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -70,15 +87,39 @@ function NewPostPageInner() {
   }, []);
 
   useEffect(() => {
-    if (!gadgetSearch.trim()) { setGadgetResults([]); return; }
+    if (!gadgetSearch.trim()) { setGadgetResults([]); setSearchDone(false); return; }
     const t = setTimeout(async () => {
       try {
         const res = await api.get(`/gadgets?search=${encodeURIComponent(gadgetSearch)}&limit=6`);
         setGadgetResults(res.data.data ?? res.data);
       } catch { setGadgetResults([]); }
+      finally { setSearchDone(true); }
     }, 300);
     return () => clearTimeout(t);
   }, [gadgetSearch]);
+
+  const saveNewGadget = async () => {
+    if (!newGadgetName.trim() || !newGadgetBrand.trim()) return;
+    setSavingGadget(true);
+    try {
+      const res = await api.post("/gadgets", {
+        name: newGadgetName.trim(),
+        brand: newGadgetBrand.trim(),
+        category: newGadgetCategory,
+      });
+      setSelectedGadget(res.data);
+      setShowNewGadgetForm(false);
+      setShowGadgetSearch(false);
+      setGadgetSearch("");
+      setNewGadgetName("");
+      setNewGadgetBrand("");
+      setNewGadgetCategory("smartphone");
+    } catch (e: any) {
+      alert(e?.response?.data?.message ?? "Gagal menambah gadget. Coba lagi.");
+    } finally {
+      setSavingGadget(false);
+    }
+  };
 
   const uploadFile = async (file: File) => {
     setUploading(true);
@@ -201,16 +242,16 @@ function NewPostPageInner() {
             <input
               type="text"
               value={gadgetSearch}
-              onChange={(e) => { setGadgetSearch(e.target.value); setShowGadgetSearch(true); }}
+              onChange={(e) => { setGadgetSearch(e.target.value); setShowGadgetSearch(true); setSearchDone(false); setShowNewGadgetForm(false); }}
               onFocus={() => setShowGadgetSearch(true)}
               placeholder="Cari atau pilih gadget..."
               className="w-full pl-8 pr-4 py-2 text-sm bg-gray-50 rounded-xl border border-gray-100 focus:border-gray-300 outline-none"
             />
-            {showGadgetSearch && gadgetResults.length > 0 && (
-              <div className="absolute top-full mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto">
+            {showGadgetSearch && gadgetSearch.trim() && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-lg z-10 max-h-52 overflow-y-auto">
                 {gadgetResults.map((g) => (
                   <button key={g.id} type="button"
-                    onClick={() => { setSelectedGadget(g); setGadgetSearch(""); setGadgetResults([]); setShowGadgetSearch(false); }}
+                    onClick={() => { setSelectedGadget(g); setGadgetSearch(""); setGadgetResults([]); setShowGadgetSearch(false); setSearchDone(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 text-left border-b border-gray-50 last:border-0">
                     <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                       {g.imageUrl ? <img src={g.imageUrl} alt={g.name} className="w-full h-full object-contain" /> : <span className="text-sm">{CATEGORY_EMOJI[g.category] ?? "📱"}</span>}
@@ -221,9 +262,63 @@ function NewPostPageInner() {
                     </div>
                   </button>
                 ))}
+                {searchDone && gadgetResults.length === 0 && (
+                  <button type="button"
+                    onClick={() => { setShowNewGadgetForm(true); setShowGadgetSearch(false); setNewGadgetName(gadgetSearch); }}
+                    className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 text-left text-[#d42b2b]">
+                    <span className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-lg flex-shrink-0">+</span>
+                    <div>
+                      <p className="text-xs font-semibold">Tambah "{gadgetSearch}" sebagai gadget baru</p>
+                      <p className="text-[10px] text-gray-400">Belum ada di database DEKAT</p>
+                    </div>
+                  </button>
+                )}
               </div>
             )}
           </div>
+
+          {/* New gadget form — muncul saat user klik tambah */}
+          {showNewGadgetForm && (
+            <div className="border border-[#d42b2b]/20 bg-red-50/50 rounded-xl p-3 space-y-2.5">
+              <p className="text-xs font-bold text-[#d42b2b] uppercase tracking-wide">+ Tambah Gadget Baru</p>
+              <input
+                type="text"
+                value={newGadgetName}
+                onChange={(e) => setNewGadgetName(e.target.value)}
+                placeholder="Nama gadget (contoh: Galaxy S25 FE)"
+                className="w-full text-sm px-3 py-2 bg-white rounded-xl border border-gray-100 focus:border-[#d42b2b] outline-none"
+              />
+              <input
+                type="text"
+                value={newGadgetBrand}
+                onChange={(e) => setNewGadgetBrand(e.target.value)}
+                placeholder="Brand (contoh: Samsung)"
+                className="w-full text-sm px-3 py-2 bg-white rounded-xl border border-gray-100 focus:border-[#d42b2b] outline-none"
+              />
+              <div className="grid grid-cols-3 gap-1.5">
+                {GADGET_CATEGORIES.map((cat) => (
+                  <button key={cat.value} type="button"
+                    onClick={() => setNewGadgetCategory(cat.value)}
+                    className={cn("text-xs py-2 rounded-xl font-medium transition-colors",
+                      newGadgetCategory === cat.value ? "bg-[#d42b2b] text-white" : "bg-white text-gray-600 border border-gray-100")}>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setShowNewGadgetForm(false)}
+                  className="flex-1 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl">
+                  Batal
+                </button>
+                <button type="button" onClick={saveNewGadget}
+                  disabled={savingGadget || !newGadgetName.trim() || !newGadgetBrand.trim()}
+                  className="flex-1 py-2 text-xs font-bold text-white bg-[#d42b2b] rounded-xl disabled:opacity-50 flex items-center justify-center gap-1">
+                  {savingGadget && <Loader2 size={11} className="animate-spin" />}
+                  Simpan & Pilih
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Gadget cards horizontal scroll */}
           <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
