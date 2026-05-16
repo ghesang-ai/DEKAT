@@ -21,7 +21,7 @@ const RED = "#d42b2b";
 async function uploadImage(uri: string): Promise<string> {
   const formData = new FormData();
   formData.append("file", { uri, name: "image.jpg", type: "image/jpeg" } as any);
-  const res = await api.post("/upload/image", formData, {
+  const res = await api.post("/media/upload", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data.url;
