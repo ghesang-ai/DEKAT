@@ -118,4 +118,9 @@ export class AdminController {
   ) {
     return this.adminService.createInvite(user.sub, Math.min(count, 20));
   }
+
+  @Get('activity')
+  getActivityStats() {
+    return this.adminService.getActivityStats();
+  }
 }

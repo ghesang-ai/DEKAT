@@ -175,4 +175,31 @@ export class AdminService {
     );
     return codes;
   }
+
+  async getActivityStats() {
+    const days = 7;
+    const now = new Date();
+    const result = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+      const [users, posts, gadgets] = await Promise.all([
+        this.prisma.user.count({ where: { createdAt: { gte: start, lte: end } } }),
+        this.prisma.post.count({ where: { createdAt: { gte: start, lte: end } } }),
+        this.prisma.gadget.count({ where: { createdAt: { gte: start, lte: end } } }),
+      ]);
+      result.push({
+        date: start.toISOString().split('T')[0],
+        label: start.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+        users,
+        posts,
+        gadgets,
+      });
+    }
+    return result;
+  }
 }
