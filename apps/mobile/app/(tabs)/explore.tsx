@@ -1,146 +1,239 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  View, Text, FlatList, StyleSheet, TextInput, TouchableOpacity,
-  Image, ScrollView, ActivityIndicator,
+  View, Text, FlatList, StyleSheet, RefreshControl,
+  TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Search, Star } from "lucide-react-native";
+import { TrendingUp } from "lucide-react-native";
 import { api } from "../../src/lib/api";
+import PostCard, { Post } from "../../src/components/PostCard";
 
-interface Gadget {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  imageUrl: string | null;
-  avgScore: number;
-}
+const HEADER_RED = "#c0281f";
+const RED = "#d42b2b";
 
-const CATEGORIES = ["semua", "smartphone", "laptop", "tablet", "wearable", "audio"];
+const FILTERS = [
+  { value: "", label: "Semua" },
+  { value: "review", label: "⭐ Review" },
+  { value: "photo", label: "📷 Foto" },
+  { value: "discussion", label: "💬 Diskusi" },
+  { value: "video", label: "🎬 Video" },
+];
 
 export default function ExploreScreen() {
-  const router = useRouter();
-  const [gadgets, setGadgets] = useState<Gadget[]>([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("semua");
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const fetchPosts = useCallback(async (p: number, q: string, type: string) => {
     try {
-      const params = new URLSearchParams();
-      if (search) params.set("search", search);
-      if (category !== "semua") params.set("category", category);
-      const res = await api.get(`/gadgets?${params}`);
-      setGadgets(res.data.data ?? res.data);
+      let url: string;
+      if (q) {
+        const params = new URLSearchParams({ search: q, page: String(p), limit: "15" });
+        if (type) params.set("type", type);
+        url = `/posts?${params}`;
+      } else if (type) {
+        url = `/posts?type=${type}&page=${p}&limit=15`;
+      } else {
+        url = `/posts/trending?page=${p}&limit=15`;
+      }
+      const res = await api.get(url);
+      const data: Post[] = res.data.data ?? res.data;
+      if (p === 1) setPosts(data);
+      else setPosts(prev => [...prev, ...data]);
+      setHasMore(data.length === 15);
     } catch {
-      setGadgets([]);
+      if (p === 1) setPosts([]);
     } finally {
       setLoading(false);
     }
-  }, [search, category]);
+  }, []);
 
   useEffect(() => {
-    const t = setTimeout(load, 300);
+    const t = setTimeout(() => {
+      setLoading(true);
+      setPage(1);
+      setPosts([]);
+      fetchPosts(1, search, filter);
+    }, search ? 400 : 0);
     return () => clearTimeout(t);
-  }, [load]);
+  }, [search, filter, fetchPosts]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setPage(1);
+    await fetchPosts(1, search, filter);
+    setRefreshing(false);
+  };
+
+  const loadMore = () => {
+    if (!hasMore || loading) return;
+    const next = page + 1;
+    setPage(next);
+    fetchPosts(next, search, filter);
+  };
+
+  const showTrendingLabel = !search && !filter;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Jelajah</Text>
-        <View style={styles.searchBox}>
-          <Search size={14} color="#9ca3af" />
+    <View style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
+      {/* Red sticky header */}
+      <SafeAreaView edges={["top"]} style={{ backgroundColor: HEADER_RED }}>
+        {/* Title row */}
+        <View style={styles.titleRow}>
+          <TrendingUp size={20} color="white" strokeWidth={2.5} />
+          <Text style={styles.title}>Jelajah</Text>
+        </View>
+
+        {/* Search bar */}
+        <View style={styles.searchWrapper}>
+          <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="Cari gadget..."
+            placeholder="Cari postingan, gadget, topik..."
             placeholderTextColor="#9ca3af"
             value={search}
             onChangeText={setSearch}
+            returnKeyType="search"
           />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch("")}>
+              <Text style={{ color: "#9ca3af", fontSize: 16, paddingHorizontal: 4 }}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-          {CATEGORIES.map((cat) => (
+
+        {/* Filter chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContainer}
+          style={{ marginBottom: 10 }}
+        >
+          {FILTERS.map(f => (
             <TouchableOpacity
-              key={cat}
-              onPress={() => setCategory(cat)}
-              style={[styles.filterChip, category === cat && styles.filterChipActive]}
+              key={f.value}
+              onPress={() => setFilter(f.value)}
+              style={[styles.chip, filter === f.value && styles.chipActive]}
             >
-              <Text style={[styles.filterText, category === cat && styles.filterTextActive]}>
-                {cat}
+              <Text style={[styles.chipText, filter === f.value && styles.chipTextActive]}>
+                {f.label}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
+      </SafeAreaView>
 
-      {loading ? (
-        <ActivityIndicator style={{ marginTop: 60 }} color="#000" />
-      ) : gadgets.length === 0 ? (
-        <Text style={styles.empty}>Gadget tidak ditemukan</Text>
+      {loading && posts.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator color={RED} size="large" />
+        </View>
       ) : (
         <FlatList
-          data={gadgets}
-          keyExtractor={(g) => g.id}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => router.push(`/gadget/${item.id}` as any)}
-            >
-              <View style={styles.imgBox}>
-                {item.imageUrl ? (
-                  <Image source={{ uri: item.imageUrl }} style={styles.img} resizeMode="contain" />
+          data={posts}
+          keyExtractor={p => p.id}
+          contentContainerStyle={{ padding: 12, gap: 12 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={RED} />}
+          ListHeaderComponent={
+            showTrendingLabel ? (
+              <View style={styles.trendingLabel}>
+                <TrendingUp size={14} color={RED} />
+                <Text style={styles.trendingLabelText}>Post Trending Minggu Ini</Text>
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            !loading ? (
+              <View style={{ alignItems: "center", paddingTop: 60 }}>
+                <Text style={{ color: "#9ca3af", fontSize: 14 }}>
+                  {search ? "Tidak ada hasil untuk pencarian ini" : "Belum ada postingan"}
+                </Text>
+              </View>
+            ) : null
+          }
+          ListFooterComponent={
+            hasMore && posts.length > 0 ? (
+              <TouchableOpacity onPress={loadMore} style={styles.loadMore}>
+                {loading ? (
+                  <ActivityIndicator color={RED} size="small" />
                 ) : (
-                  <Text style={styles.emoji}>📱</Text>
+                  <Text style={styles.loadMoreText}>Muat lebih banyak</Text>
                 )}
-              </View>
-              <Text style={styles.brand}>{item.brand}</Text>
-              <Text style={styles.name} numberOfLines={2}>{item.name}</Text>
-              <View style={styles.bottom}>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{item.category}</Text>
-                </View>
-                <View style={styles.rating}>
-                  <Star size={10} color="#f59e0b" fill="#f59e0b" />
-                  <Text style={styles.ratingText}>{item.avgScore.toFixed(1)}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
+              </TouchableOpacity>
+            ) : null
+          }
+          renderItem={({ item }) => <PostCard post={item} />}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  header: { borderBottomWidth: 1, borderBottomColor: "#e5e7eb", paddingBottom: 8 },
-  title: { fontSize: 20, fontWeight: "800", paddingHorizontal: 16, paddingTop: 12, marginBottom: 10 },
-  searchBox: { flexDirection: "row", alignItems: "center", gap: 8, marginHorizontal: 16, backgroundColor: "#f3f4f6", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 10 },
-  searchInput: { flex: 1, fontSize: 14, color: "#111" },
-  filterRow: { paddingHorizontal: 12 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: "#f3f4f6", marginHorizontal: 4 },
-  filterChipActive: { backgroundColor: "#111" },
-  filterText: { fontSize: 12, color: "#6b7280", fontWeight: "500", textTransform: "capitalize" },
-  filterTextActive: { color: "#fff" },
-  list: { padding: 12 },
-  row: { gap: 10, marginBottom: 10 },
-  card: { flex: 1, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 16, padding: 12, gap: 6 },
-  imgBox: { width: "100%", aspectRatio: 1, backgroundColor: "#f9fafb", borderRadius: 12, justifyContent: "center", alignItems: "center", marginBottom: 4 },
-  img: { width: "100%", height: "100%" },
-  emoji: { fontSize: 36 },
-  brand: { fontSize: 10, color: "#9ca3af" },
-  name: { fontSize: 12, fontWeight: "600", lineHeight: 16 },
-  bottom: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 2 },
-  badge: { backgroundColor: "#f3f4f6", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-  badgeText: { fontSize: 9, color: "#6b7280" },
-  rating: { flexDirection: "row", alignItems: "center", gap: 2 },
-  ratingText: { fontSize: 10, fontWeight: "600", color: "#111" },
-  empty: { textAlign: "center", color: "#9ca3af", marginTop: 60, fontSize: 14 },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "white",
+  },
+  searchWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 999,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingHorizontal: 12,
+    height: 40,
+  },
+  searchIcon: { marginRight: 6, fontSize: 14 },
+  searchInput: { flex: 1, fontSize: 14, color: "#374151" },
+  filtersContainer: { paddingHorizontal: 12, gap: 8 },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  chipActive: {
+    backgroundColor: "white",
+  },
+  chipText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "white",
+  },
+  chipTextActive: {
+    color: HEADER_RED,
+  },
+  trendingLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  trendingLabelText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: RED,
+  },
+  loadMore: {
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  loadMoreText: {
+    color: "#6b7280",
+    fontSize: 14,
+  },
 });
