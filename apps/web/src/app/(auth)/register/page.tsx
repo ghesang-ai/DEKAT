@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -118,32 +119,13 @@ export default function RegisterPage() {
         {/* Mobile: compact header */}
         <div className="md:hidden flex items-center gap-3 px-6 py-5">
           {/* Logo mark */}
-          <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-[#c0281f] font-extrabold text-lg leading-none">
-              D
-            </span>
-          </div>
-          <div>
-            <p className="text-white font-bold text-xl leading-none">DEKAT</p>
-            <p className="text-white/75 text-xs mt-0.5">
-              Komunitas gadget terpercaya di Indonesia
-            </p>
-          </div>
+          <Image src="/logo-white.png" alt="DEKAT" width={100} height={32} className="object-contain" />
         </div>
 
         {/* Desktop: full branding panel */}
         <div className="hidden md:flex flex-col flex-1 px-10 py-12 justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-[#c0281f] font-extrabold text-xl leading-none">
-                D
-              </span>
-            </div>
-            <span className="text-white font-bold text-2xl tracking-tight">
-              DEKAT
-            </span>
-          </div>
+          <Image src="/logo-white.png" alt="DEKAT" width={140} height={44} className="object-contain" />
 
           {/* Hero */}
           <div className="flex flex-col items-start gap-3">
