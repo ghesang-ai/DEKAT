@@ -13,6 +13,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "7724", "--directory", "/tmp"],
       "port": 7724
+    },
+    {
+      "name": "polling-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "7725", "--directory", "/Users/ghesangpratano/Library/Mobile Documents/com~apple~CloudDocs/GHESANG HD DRIVE/DEKAT SOCIAL MEDIA"],
+      "port": 7725
     }
   ]
 }

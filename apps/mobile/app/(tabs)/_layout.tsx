@@ -68,6 +68,11 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => <User size={22} color={color} strokeWidth={focused ? 2.5 : 1.8} />,
         }}
       />
+      {/* Hidden from tab bar — still accessible as a route */}
+      <Tabs.Screen
+        name="compare"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }
