@@ -91,13 +91,13 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
         setFollowing(pRes.data.isFollowing ?? false);
         setPosts(postsRes.data.data ?? postsRes.data);
       } catch {
-        router.back();
+        setLoading(false);
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [username, router]);
+    if (username) load();
+  }, [username]);
 
   const toggleFollow = async () => {
     setFollowLoading(true);
@@ -127,7 +127,12 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
     </div>
   );
 
-  if (!profile) return null;
+  if (!profile) return (
+    <div className="flex flex-col items-center justify-center h-screen bg-[#f5f5f5] gap-3">
+      <p className="text-sm text-gray-400">Gagal memuat profil</p>
+      <button onClick={() => window.location.reload()} className="text-sm text-[#d42b2b] font-semibold">Coba lagi</button>
+    </div>
+  );
 
   const { level, label: levelLabel } = getLevel(profile.trustScore);
   const badges = getBadges(posts, profile.trustScore);
