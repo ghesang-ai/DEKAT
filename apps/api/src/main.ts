@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({ origin: true, credentials: true });
 
   const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`🚀 DEKAT API running on http://localhost:${port}/api/v1 [admin gadgets enabled]`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 DEKAT API running on port ${port} [admin gadgets enabled]`);
 }
 bootstrap();
