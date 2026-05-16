@@ -12,6 +12,8 @@ interface Profile {
   username: string;
   displayName: string;
   avatarUrl: string | null;
+  avatarPositionX?: number;
+  avatarPositionY?: number;
   coverUrl: string | null;
   coverPositionY: number | null;
   bio: string | null;
@@ -216,7 +218,7 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
           <div className="relative">
             <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-[#c0281f] to-[#e8453a]">
               {profile.avatarUrl
-                ? <img src={profile.avatarUrl} alt={profile.displayName} className="w-full h-full object-cover" />
+                ? <img src={profile.avatarUrl} alt={profile.displayName} className="w-full h-full object-cover" style={{ objectPosition: `${profile.avatarPositionX ?? 50}% ${profile.avatarPositionY ?? 50}%` }} />
                 : <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">{profile.displayName[0]}</div>
               }
             </div>

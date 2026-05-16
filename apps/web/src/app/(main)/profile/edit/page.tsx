@@ -24,9 +24,12 @@ export default function EditProfilePage() {
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarPositionX, setAvatarPositionX] = useState(50);
+  const [avatarPositionY, setAvatarPositionY] = useState(50);
   const [coverUrl, setCoverUrl] = useState("");
   const [coverPositionY, setCoverPositionY] = useState(50);
   const dragState = useRef<{ dragging: boolean; startY: number; startPos: number } | null>(null);
+  const avatarDragState = useRef<{ dragging: boolean; startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const [socialLinks, setSocialLinks] = useState(SOCIAL_PLATFORMS);
   const [showOnline, setShowOnline] = useState(true);
   const [allowMessages, setAllowMessages] = useState(false);
@@ -44,6 +47,8 @@ export default function EditProfilePage() {
       setLocation((user as any).location ?? "");
       setWebsite((user as any).website ?? "");
       setAvatarUrl(user.avatarUrl ?? "");
+      setAvatarPositionX((user as any).avatarPositionX ?? 50);
+      setAvatarPositionY((user as any).avatarPositionY ?? 50);
       setCoverUrl((user as any).coverUrl ?? "");
       setCoverPositionY((user as any).coverPositionY ?? 50);
     }
@@ -65,6 +70,28 @@ export default function EditProfilePage() {
   const handleCoverDragEnd = useCallback(() => {
     if (dragState.current) {
       dragState.current.dragging = false;
+    }
+  }, []);
+
+  const handleAvatarDragStart = useCallback((clientX: number, clientY: number) => {
+    avatarDragState.current = { dragging: true, startX: clientX, startY: clientY, startPosX: avatarPositionX, startPosY: avatarPositionY };
+  }, [avatarPositionX, avatarPositionY]);
+
+  const handleAvatarDragMove = useCallback((clientX: number, clientY: number, containerWidth: number, containerHeight: number) => {
+    if (!avatarDragState.current?.dragging) return;
+    const deltaX = clientX - avatarDragState.current.startX;
+    const deltaY = clientY - avatarDragState.current.startY;
+    const deltaPctX = (deltaX / containerWidth) * 100;
+    const deltaPctY = (deltaY / containerHeight) * 100;
+    const newPosX = Math.min(100, Math.max(0, avatarDragState.current.startPosX + deltaPctX));
+    const newPosY = Math.min(100, Math.max(0, avatarDragState.current.startPosY + deltaPctY));
+    setAvatarPositionX(newPosX);
+    setAvatarPositionY(newPosY);
+  }, []);
+
+  const handleAvatarDragEnd = useCallback(() => {
+    if (avatarDragState.current) {
+      avatarDragState.current.dragging = false;
     }
   }, []);
 
@@ -94,6 +121,8 @@ export default function EditProfilePage() {
         location: location.trim() || null,
         website: website.trim() || null,
         avatarUrl: avatarUrl || null,
+        avatarPositionX,
+        avatarPositionY,
         coverUrl: coverUrl || null,
         coverPositionY,
       });
@@ -204,9 +233,26 @@ export default function EditProfilePage() {
         {/* Avatar overlapping */}
         <div className="absolute left-4 -bottom-10">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-[#c0281f] to-[#e8453a]">
+            <div
+              className="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-[#c0281f] to-[#e8453a]"
+              onMouseDown={avatarUrl ? (e) => { e.preventDefault(); handleAvatarDragStart(e.clientX, e.clientY); } : undefined}
+              onMouseMove={avatarUrl ? (e) => { if (avatarDragState.current?.dragging) handleAvatarDragMove(e.clientX, e.clientY, e.currentTarget.clientWidth, e.currentTarget.clientHeight); } : undefined}
+              onMouseUp={avatarUrl ? () => handleAvatarDragEnd() : undefined}
+              onMouseLeave={avatarUrl ? () => handleAvatarDragEnd() : undefined}
+              onTouchStart={avatarUrl ? (e) => handleAvatarDragStart(e.touches[0].clientX, e.touches[0].clientY) : undefined}
+              onTouchMove={avatarUrl ? (e) => { e.preventDefault(); handleAvatarDragMove(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget.clientWidth, e.currentTarget.clientHeight); } : undefined}
+              onTouchEnd={avatarUrl ? () => handleAvatarDragEnd() : undefined}
+              style={avatarUrl ? { cursor: avatarDragState.current?.dragging ? "grabbing" : "grab" } : undefined}
+            >
               {avatarUrl
-                ? <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                ? (
+                  <>
+                    <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover select-none pointer-events-none" style={{ objectPosition: `${avatarPositionX}% ${avatarPositionY}%` }} draggable={false} />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="bg-black/40 text-white text-[8px] font-semibold px-1.5 py-0.5 rounded-full select-none leading-tight">↕↔ Geser</span>
+                    </div>
+                  </>
+                )
                 : <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">{(displayName || user.displayName)[0]}</div>
               }
             </div>

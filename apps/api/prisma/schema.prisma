@@ -58,6 +58,8 @@ model User {
   avatarUrl    String?
   coverUrl       String?
   coverPositionY Float    @default(50)
+  avatarPositionX Float   @default(50)
+  avatarPositionY Float   @default(50)
   bio          String?
   location     String?  @db.VarChar(100)
   website      String?  @db.VarChar(200)
