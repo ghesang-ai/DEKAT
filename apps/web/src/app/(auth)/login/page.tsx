@@ -19,28 +19,55 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+function isNetworkError(err: unknown) {
+  if (!err || typeof err !== "object") return false;
+  const e = err as any;
+  // No response = network/timeout error (server unreachable)
+  if (!e.response) return true;
+  // 503 / 504 = server down
+  if (e.response?.status >= 500) return true;
+  return false;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
   const [error, setError] = useState("");
+  const [retrying, setRetrying] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, getValues, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const doLogin = async (data: FormData, isRetry = false) => {
     try {
       setError("");
       const res = await api.post("/auth/login", data);
       setAuth(res.data.user, res.data.token);
       router.push("/");
     } catch (err: unknown) {
-      const msg = err && typeof err === "object" && "response" in err
-        ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-        : undefined;
-      setError(msg ?? "Login gagal. Cek email dan password kamu.");
+      if (isNetworkError(err)) {
+        if (!isRetry) {
+          // Auto-retry once after 3s — Railway might be waking up
+          setError("Server sedang memulai... mencoba lagi otomatis.");
+          setRetrying(true);
+          setTimeout(async () => {
+            setRetrying(false);
+            await doLogin(data, true);
+          }, 3000);
+        } else {
+          setError("Server tidak dapat dijangkau. Coba beberapa saat lagi.");
+        }
+      } else {
+        const msg = (err as any)?.response?.data?.message;
+        setError(msg ?? "Email atau password salah.");
+      }
     }
   };
+
+  const onSubmit = (data: FormData) => doLogin(data);
+
+  const isLoading = isSubmitting || retrying;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -66,7 +93,12 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
+                Lupa password?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
@@ -80,11 +112,20 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-destructive text-sm text-center">{error}</p>
+            <div className={`text-sm text-center rounded-lg p-3 ${
+              error.includes("memulai") || error.includes("dijangkau")
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "bg-red-50 text-red-600 border border-red-100"
+            }`}>
+              {retrying && (
+                <span className="inline-block w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-2 align-middle" />
+              )}
+              {error}
+            </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Masuk..." : "Masuk"}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {retrying ? "Menghubungkan..." : isSubmitting ? "Masuk..." : "Masuk"}
           </Button>
         </form>
 
