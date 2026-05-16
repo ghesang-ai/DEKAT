@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Link2, Camera, ChevronRight, Plus } from "lucide-react";
+import { MapPin, Link2, Camera, ChevronRight, Plus, Check } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { cn } from "@/lib/utils";
@@ -30,9 +30,8 @@ export default function EditProfilePage() {
   const [allowMessages, setAllowMessages] = useState(false);
   const [uploading, setUploading] = useState<"avatar" | "cover" | null>(null);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-  const avatarRef = useRef<HTMLInputElement>(null);
-  const coverRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -80,7 +79,8 @@ export default function EditProfilePage() {
         bio: res.data.bio,
         avatarUrl: res.data.avatarUrl,
       });
-      router.push("/profile");
+      setSaved(true);
+      setTimeout(() => router.push("/profile"), 800);
     } catch {
       setError("Gagal menyimpan. Coba lagi.");
     } finally {
@@ -101,10 +101,24 @@ export default function EditProfilePage() {
         <span className="font-bold text-base text-gray-900">Edit Profil</span>
         <button
           onClick={handleSave}
-          disabled={saving || uploading !== null}
-          className="text-[#d42b2b] font-bold text-sm disabled:opacity-50"
+          disabled={saving || saved || uploading !== null}
+          className={cn(
+            "font-bold text-sm px-3 py-1.5 rounded-full transition-all active:scale-95",
+            saved
+              ? "bg-green-100 text-green-600"
+              : saving
+              ? "text-[#d42b2b] opacity-60"
+              : "text-[#d42b2b] hover:bg-red-50 active:bg-red-100 disabled:opacity-50"
+          )}
         >
-          {saving ? "..." : "Simpan"}
+          {saved ? (
+            <span className="flex items-center gap-1"><Check size={13} />Tersimpan</span>
+          ) : saving ? (
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 border-2 border-[#d42b2b] border-t-transparent rounded-full animate-spin inline-block" />
+              Simpan
+            </span>
+          ) : "Simpan"}
         </button>
       </header>
 
@@ -119,18 +133,26 @@ export default function EditProfilePage() {
               <div className="absolute inset-0" style={{backgroundImage:"radial-gradient(circle at 30% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)"}} />
             </div>
           )}
-          <button
-            onClick={() => coverRef.current?.click()}
-            disabled={uploading === "cover"}
-            className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5"
+          <label
+            htmlFor="cover-upload"
+            className={cn(
+              "absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer select-none",
+              uploading === "cover" && "opacity-70 pointer-events-none"
+            )}
           >
             {uploading === "cover"
               ? <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
               : <Camera size={12} />
             }
             Ubah Cover
-          </button>
-          <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0], "cover")} />
+          </label>
+          <input
+            id="cover-upload"
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0], "cover")}
+          />
         </div>
 
         {/* Avatar overlapping */}
@@ -142,17 +164,25 @@ export default function EditProfilePage() {
                 : <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">{(displayName || user.displayName)[0]}</div>
               }
             </div>
-            <button
-              onClick={() => avatarRef.current?.click()}
-              disabled={uploading === "avatar"}
-              className="absolute bottom-0 right-0 w-7 h-7 bg-gray-900 border-2 border-white rounded-full flex items-center justify-center"
+            <label
+              htmlFor="avatar-upload"
+              className={cn(
+                "absolute bottom-0 right-0 w-7 h-7 bg-gray-900 border-2 border-white rounded-full flex items-center justify-center cursor-pointer",
+                uploading === "avatar" && "opacity-70 pointer-events-none"
+              )}
             >
               {uploading === "avatar"
                 ? <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
                 : <Camera size={11} className="text-white" />
               }
-            </button>
-            <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0], "avatar")} />
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0], "avatar")}
+            />
           </div>
         </div>
       </div>
@@ -291,10 +321,22 @@ export default function EditProfilePage() {
       <div className="mx-4 mt-4">
         <button
           onClick={handleSave}
-          disabled={saving || uploading !== null}
-          className="w-full py-4 bg-[#d42b2b] text-white font-bold text-base rounded-2xl disabled:opacity-60 shadow-lg shadow-red-200 active:scale-[0.98] transition-transform"
+          disabled={saving || saved || uploading !== null}
+          className={cn(
+            "w-full py-4 font-bold text-base rounded-2xl disabled:opacity-60 active:scale-[0.98] transition-all shadow-lg",
+            saved
+              ? "bg-green-500 text-white shadow-green-200"
+              : "bg-[#d42b2b] text-white hover:bg-[#c0281f] shadow-red-200"
+          )}
         >
-          {saving ? "Menyimpan..." : "Simpan Perubahan"}
+          {saved ? (
+            <span className="flex items-center justify-center gap-2"><Check size={18} />Profil Tersimpan!</span>
+          ) : saving ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Menyimpan...
+            </span>
+          ) : "Simpan Perubahan"}
         </button>
       </div>
 
