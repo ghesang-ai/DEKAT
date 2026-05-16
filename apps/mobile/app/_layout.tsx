@@ -15,6 +15,7 @@ export default function RootLayout() {
       <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="profile/edit" />
+      <Stack.Screen name="post/[id]" />
     </Stack>
   );
 }

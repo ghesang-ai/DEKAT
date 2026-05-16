@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, Image, TouchableOpacity,
 } from "react-native";
 import { Heart, MessageCircle, Bookmark, Share2, Star } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { api } from "../lib/api";
 
 const RED = "#d42b2b";
@@ -34,26 +35,28 @@ export default function PostCard({ post }: { post: Post }) {
   const [liked, setLiked] = useState(post.isLiked ?? false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [bookmarked, setBookmarked] = useState(post.isBookmarked ?? false);
+  const router = useRouter();
 
   const toggleLike = async () => {
+    // optimistic update first
+    setLiked(prev => !prev);
+    setLikeCount(n => liked ? n - 1 : n + 1);
     try {
-      if (liked) {
-        await api.delete(`/posts/${post.id}/like`);
-        setLikeCount(n => n - 1);
-      } else {
-        await api.post(`/posts/${post.id}/like`);
-        setLikeCount(n => n + 1);
-      }
-      setLiked(!liked);
-    } catch {}
+      await api.post(`/posts/${post.id}/like`); // always POST, backend toggles
+    } catch {
+      // revert on error
+      setLiked(prev => !prev);
+      setLikeCount(n => liked ? n + 1 : n - 1);
+    }
   };
 
   const toggleBookmark = async () => {
+    setBookmarked(prev => !prev);
     try {
-      if (bookmarked) await api.delete(`/posts/${post.id}/bookmark`);
-      else await api.post(`/posts/${post.id}/bookmark`);
-      setBookmarked(!bookmarked);
-    } catch {}
+      await api.post(`/posts/${post.id}/bookmark`); // always POST, backend toggles
+    } catch {
+      setBookmarked(prev => !prev);
+    }
   };
 
   return (
@@ -115,7 +118,7 @@ export default function PostCard({ post }: { post: Post }) {
           <Heart size={18} color={liked ? RED : "#9ca3af"} fill={liked ? RED : "none"} strokeWidth={1.8} />
           <Text style={[styles.actionText, liked && { color: RED }]}>{likeCount}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionBtn}>
+        <TouchableOpacity style={styles.actionBtn} onPress={() => router.push(`/post/${post.id}` as any)}>
           <MessageCircle size={18} color="#9ca3af" strokeWidth={1.8} />
           <Text style={styles.actionText}>{post.commentCount}</Text>
         </TouchableOpacity>
