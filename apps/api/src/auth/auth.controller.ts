@@ -41,7 +41,7 @@ export class AuthController {
 
   @Patch('profile')
   @UseGuards(JwtGuard)
-  updateProfile(@CurrentUser() user: JwtPayload, @Body() body: { displayName?: string; bio?: string; avatarUrl?: string; coverUrl?: string | null; location?: string | null; website?: string | null }) {
+  updateProfile(@CurrentUser() user: JwtPayload, @Body() body: { displayName?: string; bio?: string; avatarUrl?: string; coverUrl?: string | null; coverPositionY?: number; location?: string | null; website?: string | null }) {
     return this.authService.updateProfile(user.sub, body);
   }
 }

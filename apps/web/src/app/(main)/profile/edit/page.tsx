@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Link2, Camera, ChevronRight, Plus, Check } from "lucide-react";
 import { api } from "@/lib/api";
@@ -25,6 +25,8 @@ export default function EditProfilePage() {
   const [website, setWebsite] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [coverPositionY, setCoverPositionY] = useState(50);
+  const dragState = useRef<{ dragging: boolean; startY: number; startPos: number } | null>(null);
   const [socialLinks, setSocialLinks] = useState(SOCIAL_PLATFORMS);
   const [showOnline, setShowOnline] = useState(true);
   const [allowMessages, setAllowMessages] = useState(false);
@@ -43,8 +45,28 @@ export default function EditProfilePage() {
       setWebsite((user as any).website ?? "");
       setAvatarUrl(user.avatarUrl ?? "");
       setCoverUrl((user as any).coverUrl ?? "");
+      setCoverPositionY((user as any).coverPositionY ?? 50);
     }
   }, [user, token, _hasHydrated]);
+
+  const handleCoverDragStart = useCallback((clientY: number) => {
+    dragState.current = { dragging: true, startY: clientY, startPos: coverPositionY };
+  }, [coverPositionY]);
+
+  const handleCoverDragMove = useCallback((clientY: number, containerHeight: number) => {
+    if (!dragState.current?.dragging) return;
+    const deltaY = clientY - dragState.current.startY;
+    // Moving down -> image shifts up -> positionY decreases
+    const deltaPct = (deltaY / containerHeight) * 100;
+    const newPos = Math.min(100, Math.max(0, dragState.current.startPos - deltaPct));
+    setCoverPositionY(newPos);
+  }, []);
+
+  const handleCoverDragEnd = useCallback(() => {
+    if (dragState.current) {
+      dragState.current.dragging = false;
+    }
+  }, []);
 
   const handleUpload = async (file: File, type: "avatar" | "cover") => {
     setUploading(type);
@@ -73,6 +95,7 @@ export default function EditProfilePage() {
         website: website.trim() || null,
         avatarUrl: avatarUrl || null,
         coverUrl: coverUrl || null,
+        coverPositionY,
       });
       updateUser({
         displayName: res.data.displayName,
@@ -125,9 +148,32 @@ export default function EditProfilePage() {
       {/* Cover + Avatar */}
       <div className="relative">
         {/* Cover area */}
-        <div className="h-40 relative overflow-hidden">
+        <div
+          className="h-40 relative overflow-hidden"
+          onMouseDown={coverUrl ? (e) => { e.preventDefault(); handleCoverDragStart(e.clientY); } : undefined}
+          onMouseMove={coverUrl ? (e) => { if (dragState.current?.dragging) handleCoverDragMove(e.clientY, e.currentTarget.clientHeight); } : undefined}
+          onMouseUp={coverUrl ? () => handleCoverDragEnd() : undefined}
+          onMouseLeave={coverUrl ? () => handleCoverDragEnd() : undefined}
+          onTouchStart={coverUrl ? (e) => handleCoverDragStart(e.touches[0].clientY) : undefined}
+          onTouchMove={coverUrl ? (e) => { e.preventDefault(); handleCoverDragMove(e.touches[0].clientY, e.currentTarget.clientHeight); } : undefined}
+          onTouchEnd={coverUrl ? () => handleCoverDragEnd() : undefined}
+          style={coverUrl ? { cursor: dragState.current?.dragging ? "grabbing" : "grab" } : undefined}
+        >
           {coverUrl ? (
-            <img src={coverUrl} alt="cover" className="w-full h-full object-cover" />
+            <>
+              <img
+                src={coverUrl}
+                alt="cover"
+                className="w-full h-full object-cover select-none pointer-events-none"
+                style={{ objectPosition: `center ${coverPositionY}%` }}
+                draggable={false}
+              />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className="bg-black/40 text-white text-xs font-semibold px-3 py-1 rounded-full select-none">
+                  ↕ Geser untuk atur posisi
+                </span>
+              </div>
+            </>
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#c0281f] via-[#8b0000] to-[#3d0000]">
               <div className="absolute inset-0" style={{backgroundImage:"radial-gradient(circle at 30% 50%, rgba(255,255,255,0.07) 0%, transparent 60%)"}} />

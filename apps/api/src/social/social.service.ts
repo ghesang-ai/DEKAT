@@ -39,7 +39,7 @@ export class SocialService {
       where: { username },
       select: {
         id: true, username: true, displayName: true, avatarUrl: true,
-        coverUrl: true, bio: true, location: true, website: true,
+        coverUrl: true, coverPositionY: true, bio: true, location: true, website: true,
         trustScore: true, createdAt: true,
         _count: { select: { posts: true, followers: true, following: true } },
       },

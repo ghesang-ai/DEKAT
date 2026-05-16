@@ -13,6 +13,7 @@ interface Profile {
   displayName: string;
   avatarUrl: string | null;
   coverUrl: string | null;
+  coverPositionY: number | null;
   bio: string | null;
   location: string | null;
   website: string | null;
@@ -197,7 +198,12 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
         {/* Cover */}
         <div className="h-36 relative overflow-hidden">
           {profile.coverUrl ? (
-            <img src={profile.coverUrl} alt="cover" className="w-full h-full object-cover" />
+            <img
+              src={profile.coverUrl}
+              alt="cover"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: `center ${profile.coverPositionY ?? 50}%` }}
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#c0281f] via-[#8b0000] to-[#3d0000]">
               <div className="absolute inset-0" style={{backgroundImage:"radial-gradient(circle at 30% 50%, rgba(255,255,255,0.07) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%)"}} />

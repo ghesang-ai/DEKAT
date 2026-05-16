@@ -53,11 +53,11 @@ export class AuthService {
   async getMe(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true, createdAt: true },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, coverPositionY: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true, createdAt: true },
     });
   }
 
-  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string; coverUrl?: string | null; location?: string | null; website?: string | null }) {
+  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string; coverUrl?: string | null; coverPositionY?: number; location?: string | null; website?: string | null }) {
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -65,10 +65,11 @@ export class AuthService {
         ...(data.bio !== undefined && { bio: data.bio }),
         ...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl }),
         ...(data.coverUrl !== undefined && { coverUrl: data.coverUrl }),
+        ...(data.coverPositionY !== undefined && { coverPositionY: data.coverPositionY }),
         ...(data.location !== undefined && { location: data.location }),
         ...(data.website !== undefined && { website: data.website }),
       },
-      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true },
+      select: { id: true, username: true, displayName: true, email: true, avatarUrl: true, coverUrl: true, coverPositionY: true, bio: true, location: true, website: true, trustScore: true, role: true, status: true, currentGadgetId: true },
     });
     return updated;
   }

@@ -56,7 +56,8 @@ model User {
   phone        String?  @db.VarChar(20)
   passwordHash String?
   avatarUrl    String?
-  coverUrl     String?
+  coverUrl       String?
+  coverPositionY Float    @default(50)
   bio          String?
   location     String?  @db.VarChar(100)
   website      String?  @db.VarChar(200)
