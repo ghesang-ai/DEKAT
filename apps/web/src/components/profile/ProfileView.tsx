@@ -76,6 +76,7 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("Postingan");
   const [followLoading, setFollowLoading] = useState(false);
@@ -83,15 +84,26 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
   useEffect(() => {
     const load = async () => {
       try {
-        const [pRes, postsRes] = await Promise.all([
-          api.get(`/users/${username}`),
-          api.get(`/users/${username}/posts?limit=30`),
-        ]);
+        // Fetch profile first — critical
+        const pRes = await api.get(`/users/${username}`);
         setProfile(pRes.data);
         setFollowing(pRes.data.isFollowing ?? false);
-        setPosts(postsRes.data.data ?? postsRes.data);
-      } catch {
+      } catch (err: any) {
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.message ?? err?.message ?? "unknown";
+        console.error("[ProfileView] profile fetch failed:", status, msg);
+        setLoadError(status ? `Error ${status}: ${msg}` : `Network error: ${msg}`);
         setLoading(false);
+        return;
+      }
+
+      // Fetch posts separately — non-critical, failure won't hide the profile
+      try {
+        const postsRes = await api.get(`/users/${username}/posts?limit=30`);
+        setPosts(postsRes.data.data ?? postsRes.data);
+      } catch (err: any) {
+        console.warn("[ProfileView] posts fetch failed:", err?.response?.status, err?.message);
+        // leave posts as [] — profile still shows
       } finally {
         setLoading(false);
       }
@@ -128,9 +140,20 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
   );
 
   if (!profile) return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#f5f5f5] gap-3">
-      <p className="text-sm text-gray-400">Gagal memuat profil</p>
-      <button onClick={() => window.location.reload()} className="text-sm text-[#d42b2b] font-semibold">Coba lagi</button>
+    <div className="flex flex-col items-center justify-center h-screen bg-[#f5f5f5] gap-3 px-6">
+      <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d42b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <p className="text-sm font-semibold text-gray-700">Gagal memuat profil</p>
+      {loadError && (
+        <p className="text-xs text-gray-400 text-center max-w-xs">{loadError}</p>
+      )}
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-1 bg-[#d42b2b] text-white text-sm font-bold px-6 py-2.5 rounded-full active:scale-95 transition-transform"
+      >
+        Coba lagi
+      </button>
     </div>
   );
 
