@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, Compass, PlusCircle, GitCompare, User } from "lucide-react-native";
+import { Home, Compass, PlusCircle, Users, User } from "lucide-react-native";
 import { View } from "react-native";
 
 const RED = "#d42b2b";
@@ -55,10 +55,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="compare"
+        name="community"
         options={{
-          title: "Compare",
-          tabBarIcon: ({ color, focused }) => <GitCompare size={22} color={color} strokeWidth={focused ? 2.5 : 1.8} />,
+          title: "Komunitas",
+          tabBarIcon: ({ color, focused }) => <Users size={22} color={color} strokeWidth={focused ? 2.5 : 1.8} />,
         }}
       />
       <Tabs.Screen
