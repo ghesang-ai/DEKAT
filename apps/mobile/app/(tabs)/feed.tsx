@@ -4,6 +4,7 @@ import {
   TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Bell, MessageCircle, Search } from "lucide-react-native";
 import { api } from "../../src/lib/api";
 import PostCard, { Post } from "../../src/components/PostCard";
 
@@ -106,15 +107,15 @@ export default function FeedScreen() {
           <Image source={require("../../assets/logo-white.png")} style={styles.logo} resizeMode="contain" />
           <View style={styles.headerIcons}>
             <TouchableOpacity>
-              <Text style={styles.iconText}>🔔</Text>
+              <Bell size={22} color="white" strokeWidth={1.8} />
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={styles.iconText}>💬</Text>
+              <MessageCircle size={22} color="white" strokeWidth={1.8} />
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.searchWrapper}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Search size={15} color="#9ca3af" style={{ marginRight: 6 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Cari gadget, teman, atau topik..."
@@ -172,9 +173,7 @@ const styles = StyleSheet.create({
   headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 8, paddingBottom: 10 },
   logo: { height: 40, width: 140 },
   headerIcons: { flexDirection: "row", gap: 16 },
-  iconText: { fontSize: 22 },
   searchWrapper: { flexDirection: "row", alignItems: "center", backgroundColor: "white", borderRadius: 999, marginHorizontal: 16, marginBottom: 12, paddingHorizontal: 12, height: 40 },
-  searchIcon: { marginRight: 6, fontSize: 14 },
   searchInput: { flex: 1, fontSize: 14, color: "#374151" },
   tabs: { backgroundColor: "white", flexDirection: "row", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#f3f4f6" },
   tab: { paddingHorizontal: 20, paddingVertical: 6, borderRadius: 999, borderWidth: 1, borderColor: "#e5e7eb" },
