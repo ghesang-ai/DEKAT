@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Orbitron } from "next/font/google";
+import { Geist, Geist_Mono, Exo_2 } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const orbitron = Orbitron({
+const exo2 = Exo_2({
   variable: "--font-brand",
   subsets: ["latin"],
   weight: ["700", "800", "900"],
@@ -20,7 +20,7 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   title: "GUEPOSTING — Gadget Social Network",
-  description: "Platform komunitas gadget Indonesia",
+  description: "Gadget User Experience, Posting & Sharing",
 };
 
 export default function RootLayout({
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${exo2.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

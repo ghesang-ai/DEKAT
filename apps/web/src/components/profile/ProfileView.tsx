@@ -180,7 +180,10 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
             <div className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 46, height: 46, objectFit: 'contain', borderRadius: '14px' }} />
-              <span className="text-white font-black text-xl tracking-tight" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
+              <div className="flex flex-col leading-none">
+                <span className="font-black text-white text-xl" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
+                <span className="text-white/70 font-medium" style={{ fontSize: 9 }}>Gadget User Experience, Posting &amp; Sharing</span>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <button onClick={() => router.push("/profile/edit")} className="text-white/80 hover:text-white">
