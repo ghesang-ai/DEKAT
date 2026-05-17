@@ -73,15 +73,18 @@ export default function LoginPage() {
       <div className="relative flex items-start justify-between mb-8">
         {/* Left: logo + headline */}
         <div className="flex-1 pt-2 z-10">
-          <div
-            className="mb-5 overflow-hidden"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/gueposting-logo-wide.png"
+            alt="GUEPOSTING"
+            className="mb-5"
             style={{
-              width: 300,
-              height: 78,
-              backgroundImage: `url(/gueposting-logo-wide.png)`,
-              backgroundSize: "auto 78px",
-              backgroundPosition: "-13px center",
-              backgroundRepeat: "no-repeat",
+              height: 72,
+              width: "auto",
+              maxWidth: "100%",
+              objectFit: "contain",
+              objectPosition: "left center",
+              display: "block",
             }}
           />
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
@@ -234,27 +237,19 @@ export default function LoginPage() {
       </div>
 
       {/* ── Social Buttons ── */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        {[
-          { label: "Google", icon: "G", color: "#4285F4" },
-          { label: "Facebook", icon: "f", color: "#1877F2" },
-          { label: "Apple", icon: "", color: "#000" },
-        ].map(({ label, icon, color }) => (
-          <button
-            key={label}
-            type="button"
-            className="flex items-center justify-center gap-2 py-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
-          >
-            {label === "Apple" ? (
-              <svg width="16" height="16" viewBox="0 0 814 1000" fill="black">
-                <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.8 0 663.4 0 541.8c0-207.4 135.4-316.9 268.9-316.9 71 0 130.3 47.2 174.5 47.2 42.8 0 109.7-50.2 190.8-50.2zm-234.6-126.6c32.7-38.7 56.5-92.7 56.5-146.7 0-7.4-.6-14.9-1.9-21.3-53.1 1.9-116.6 35.2-154.7 80.3-29.7 33.9-57.8 87.9-57.8 142.5 0 8.3 1.3 16.6 1.9 19.2 3.2.6 8.3 1.3 13.5 1.3 47.9 0 108.2-31.5 142.5-75.3z"/>
-              </svg>
-            ) : (
-              <span className="font-bold text-sm" style={{ color }}>{icon}</span>
-            )}
-            <span className="text-sm font-medium text-gray-700">{label}</span>
-          </button>
-        ))}
+      <div className="mb-6">
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
+        >
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,19.001,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+          </svg>
+          <span className="text-sm font-semibold text-gray-700">Masuk dengan Google</span>
+        </button>
       </div>
 
       {/* ── Trust Badge ── */}
