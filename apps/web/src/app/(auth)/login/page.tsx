@@ -73,18 +73,15 @@ export default function LoginPage() {
       <div className="relative flex items-start justify-between mb-8">
         {/* Left: logo + headline */}
         <div className="flex-1 pt-2 z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/gueposting-logo-wide.png"
-            alt="GUEPOSTING"
+          <div
             className="mb-5"
             style={{
-              height: 72,
-              width: "auto",
-              maxWidth: "100%",
-              objectFit: "contain",
-              objectPosition: "left center",
-              display: "block",
+              width: "100%",
+              height: 90,
+              backgroundImage: "url(/gueposting-logo-wide.png)",
+              backgroundSize: "auto 90px",
+              backgroundPosition: "-18px center",
+              backgroundRepeat: "no-repeat",
             }}
           />
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
