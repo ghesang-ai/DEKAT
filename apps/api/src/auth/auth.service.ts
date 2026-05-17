@@ -84,6 +84,29 @@ export class AuthService {
     });
   }
 
+  async findOrCreateGoogleUser(profile: { email: string; displayName: string; avatarUrl?: string }) {
+    let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
+
+    if (!user) {
+      const baseUsername = profile.email.split('@')[0].replace(/[^a-z0-9_]/gi, '').toLowerCase().slice(0, 20) || 'user';
+      let username = baseUsername;
+      let suffix = 1;
+      while (await this.prisma.user.findUnique({ where: { username } })) {
+        username = `${baseUsername}${suffix++}`;
+      }
+      user = await this.prisma.user.create({
+        data: {
+          email: profile.email,
+          username,
+          displayName: profile.displayName,
+          avatarUrl: profile.avatarUrl,
+        },
+      });
+    }
+
+    return this.signTokens(user);
+  }
+
   private async signTokens(user: { id: string; email: string; role: string; status: string; username: string; displayName: string; avatarUrl?: string | null; trustScore?: number }) {
     const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role as any };
     const token = this.jwt.sign(payload);
