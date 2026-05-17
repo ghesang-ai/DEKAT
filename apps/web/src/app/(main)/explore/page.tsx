@@ -72,7 +72,7 @@ export default function ExplorePage() {
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 46, height: 46, objectFit: 'contain', borderRadius: '14px' }} />
-            <span className="font-black text-white text-lg tracking-tight">GUEPOSTING</span>
+            <span className="font-black text-white text-lg tracking-tight" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
           </div>
           <div className="flex items-center gap-2">
             <TrendingUp size={18} className="text-white/80" />

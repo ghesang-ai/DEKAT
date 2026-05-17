@@ -113,7 +113,7 @@ function LoginPage() {
           />
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
             Selamat datang<br />di{" "}
-            <span style={{ color: RED, backgroundColor: "transparent" }}>GUEPOSTING</span>
+            <span style={{ fontFamily: "var(--font-brand)", color: RED, backgroundColor: "transparent" }}>GUEPOSTING</span>
           </h1>
           <p className="text-sm text-gray-500 mt-2 leading-relaxed max-w-[200px]">
             Masuk untuk berbagi dan menemukan hal terbaik seputar gadget.
@@ -207,7 +207,7 @@ function RegisterPage() {
           {/* Logo dalam card putih agar terlihat di background merah */}
           <div className="bg-white rounded-2xl px-5 py-4 inline-flex items-center gap-3 mb-10 shadow-sm">
             <Image src={ICON_LIGHT} alt="GP" width={36} height={36} className="object-contain" />
-            <span className="font-black text-xl tracking-tight" style={{ color: RED }}>GUEPOSTING</span>
+            <span className="font-black text-xl tracking-tight" style={{ fontFamily: "var(--font-brand)", color: RED }}>GUEPOSTING</span>
           </div>
           <h2 className="text-3xl font-bold text-white leading-snug">Bergabung dengan komunitas gadget terbesar di Indonesia</h2>
           <p className="text-red-200 mt-4 text-sm leading-relaxed">Review jujur, foto unboxing, diskusi seru — semua ada di GUEPOSTING.</p>
@@ -668,7 +668,7 @@ export default function BrandPreviewPage() {
         <div className="flex items-center gap-2 px-4 py-3 overflow-x-auto">
           <div className="flex items-center gap-2 flex-shrink-0 mr-4">
             <Image src="/gueposting-icon-light.png" alt="GP" width={24} height={24} className="object-contain" />
-            <span className="text-white font-bold text-sm">GUEPOSTING</span>
+            <span className="text-white font-bold text-sm" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
             <span className="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">Preview</span>
           </div>
           {pages.map((p, i) => (

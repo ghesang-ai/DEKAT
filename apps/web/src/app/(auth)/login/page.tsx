@@ -87,7 +87,7 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
             Selamat datang<br />
             di{" "}
-            <span className="text-[#d42b2b]">GUEPOSTING</span>
+            <span className="text-[#d42b2b]" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
           </h1>
           <p className="text-sm text-gray-500 mt-2 leading-relaxed max-w-[200px]">
             Masuk untuk melanjutkan perjalanan berbagi dan menemukan hal terbaik seputar gadget.

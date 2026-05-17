@@ -51,7 +51,7 @@ export default function SetupPage() {
           <div className="flex items-center justify-center gap-2 mb-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/gueposting-icon-red.png" alt="GUEPOSTING" style={{ width: 40, height: 40, objectFit: 'contain' }} />
-            <span className="font-black text-xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
+            <span className="font-black text-xl tracking-tight" style={{ fontFamily: "var(--font-brand)", color: "#d42b2b" }}>GUEPOSTING</span>
           </div>
           <h1 className="text-2xl font-bold">Setup Admin</h1>
           <p className="text-muted-foreground text-sm">

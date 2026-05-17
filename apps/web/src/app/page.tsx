@@ -37,7 +37,7 @@ export default function LandingPage() {
       <nav className="border-b border-border px-6 py-4 flex items-center justify-between max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
             <img src="/gueposting-icon-red.png" alt="GUEPOSTING" className="h-8 w-8 object-contain" />
-            <span className="font-black text-xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
+            <span className="font-black text-xl tracking-tight" style={{ fontFamily: "var(--font-brand)", color: "#d42b2b" }}>GUEPOSTING</span>
           </div>
         <div className="flex items-center gap-3">
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground font-medium">Masuk</Link>

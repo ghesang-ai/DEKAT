@@ -119,7 +119,7 @@ export default function RegisterPage() {
         {/* Mobile: compact header */}
         <div className="md:hidden flex items-center gap-3 px-6 py-5">
           <Image src="/gueposting-icon-light.png" alt="GUEPOSTING" width={36} height={36} className="object-contain" />
-          <span className="font-black text-white text-xl tracking-tight">GUEPOSTING</span>
+          <span className="font-black text-white text-xl tracking-tight" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
         </div>
 
         {/* Desktop: full branding panel */}
@@ -127,7 +127,7 @@ export default function RegisterPage() {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Image src="/gueposting-icon-light.png" alt="GUEPOSTING" width={44} height={44} className="object-contain" />
-            <span className="font-black text-white text-2xl tracking-tight">GUEPOSTING</span>
+            <span className="font-black text-white text-2xl tracking-tight" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
           </div>
 
           {/* Hero */}

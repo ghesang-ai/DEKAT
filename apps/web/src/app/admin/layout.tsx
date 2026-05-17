@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="bg-[#d42b2b] px-5 py-4 flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-          <span className="font-bold text-white text-lg tracking-tight">GUEPOSTING</span>
+          <span className="font-bold text-white text-lg tracking-tight" style={{ fontFamily: "var(--font-brand)" }}>GUEPOSTING</span>
           <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">ADMIN</span>
         </div>
 
