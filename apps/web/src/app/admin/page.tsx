@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Overview platform DEKAT</p>
+          <p className="text-sm text-gray-500 mt-0.5">Overview platform GUEPOSTING</p>
         </div>
         <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 bg-white">
           <Calendar size={14} />

@@ -36,8 +36,8 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="border-b border-border px-6 py-4 flex items-center justify-between max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
-            <img src="/logo-icon.png" alt="DEKAT" className="h-8 w-8 object-contain" />
-            <img src="/logo-wordmark.png" alt="DEKAT" className="h-5 object-contain" />
+            <img src="/gueposting-icon-red.png" alt="GUEPOSTING" className="h-8 w-8 object-contain" />
+            <span className="font-black text-xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
           </div>
         <div className="flex items-center gap-3">
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground font-medium">Masuk</Link>
@@ -92,7 +92,7 @@ export default function LandingPage() {
       {/* Features */}
       <section className="px-6 py-16 border-t border-border bg-muted/20">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-10">Kenapa DEKAT?</h2>
+          <h2 className="text-2xl font-bold text-center mb-10">Kenapa GUEPOSTING?</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex gap-4">
@@ -143,7 +143,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-border px-6 py-6 text-center">
-        <p className="text-xs text-muted-foreground">© 2026 DEKAT · Komunitas gadget terpercaya Indonesia</p>
+        <p className="text-xs text-muted-foreground">© 2026 GUEPOSTING · Komunitas gadget terpercaya Indonesia</p>
       </footer>
     </div>
   );

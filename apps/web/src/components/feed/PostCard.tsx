@@ -204,7 +204,7 @@ export function PostCard({ post }: { post: Post }) {
   const share = async () => {
     const url = `${window.location.origin}/post/${post.id}`;
     if (navigator.share) {
-      try { await navigator.share({ title: `Post oleh ${post.user.displayName} di DEKAT`, url }); } catch {}
+      try { await navigator.share({ title: `Post oleh ${post.user.displayName} di GUEPOSTING`, url }); } catch {}
     } else {
       await navigator.clipboard.writeText(url);
       setCopied(true);

@@ -21,7 +21,7 @@ function StatusPoller() {
             wasApprovedRef.current = true;
             // Show browser notification if permitted
             if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("DEKAT — Akunmu Disetujui! 🎉", {
+              new Notification("GUEPOSTING — Akunmu Disetujui! 🎉", {
                 body: "Kamu sekarang bisa membuat postingan. Selamat bergabung!",
                 icon: "/favicon.ico",
               });

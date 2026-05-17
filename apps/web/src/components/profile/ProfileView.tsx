@@ -177,7 +177,11 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
       <header className="sticky top-0 z-20 bg-[#c0281f] px-4 pt-4 pb-3 flex items-center justify-between">
         {isOwn ? (
           <>
-            <span className="text-white font-black text-xl tracking-tight">DEKAT</span>
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+              <span className="text-white font-black text-xl tracking-tight">GUEPOSTING</span>
+            </div>
             <div className="flex items-center gap-3">
               <button onClick={() => router.push("/profile/edit")} className="text-white/80 hover:text-white">
                 <Settings size={20} />
@@ -266,7 +270,7 @@ export function ProfileView({ username, isOwn }: { username: string; isOwn: bool
           <span className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
             ⭐ Level {level}
           </span>
-          <span className="text-xs text-gray-400">DEKAT Member sejak {formatJoin(profile.createdAt)}</span>
+          <span className="text-xs text-gray-400">GUEPOSTING Member sejak {formatJoin(profile.createdAt)}</span>
         </div>
 
         {profile.bio && (

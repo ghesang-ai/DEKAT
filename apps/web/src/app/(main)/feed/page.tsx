@@ -17,7 +17,7 @@ function CreatePostBox() {
         <div className="w-10 h-10 rounded-full bg-[#d42b2b] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">D</div>
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-800">Apa yang baru?</p>
-          <p className="text-xs text-gray-400">Bagikan ke komunitas DEKAT</p>
+          <p className="text-xs text-gray-400">Bagikan ke komunitas GUEPOSTING</p>
         </div>
         <button onClick={() => router.push("/post/new")} className="flex items-center gap-1.5 bg-red-50 text-[#d42b2b] text-sm font-bold px-4 py-2 rounded-full border border-red-200 hover:bg-red-100 transition-colors">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -106,7 +106,10 @@ export default function FeedPage() {
       <header className="sticky top-0 z-10">
         <div className="bg-[#c0281f] px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
-            <img src="/logo-white.png" alt="DEKAT" className="object-contain" style={{ height: '72px', filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))" }} />
+            <div className="flex items-center gap-2">
+              <img src="/gueposting-icon-light.png" alt="GUEPOSTING" style={{ height: '40px', width: '40px', objectFit: 'contain' }} />
+              <span className="font-black text-white text-xl tracking-tight">GUEPOSTING</span>
+            </div>
             <div className="flex items-center gap-2">
               <NotificationBell />
             </div>

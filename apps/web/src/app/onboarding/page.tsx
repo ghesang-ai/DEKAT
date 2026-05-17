@@ -65,7 +65,7 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="text-4xl mb-2">👋</div>
-          <h1 className="text-2xl font-bold tracking-tight">Selamat datang di DEKAT!</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Selamat datang di GUEPOSTING!</h1>
           <p className="text-muted-foreground text-sm">
             Akunmu sedang menunggu persetujuan admin.<br/>
             Sambil menunggu, ceritakan gadget utama yang kamu pakai sekarang.

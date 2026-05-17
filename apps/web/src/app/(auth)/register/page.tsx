@@ -118,19 +118,22 @@ export default function RegisterPage() {
       >
         {/* Mobile: compact header */}
         <div className="md:hidden flex items-center gap-3 px-6 py-5">
-          {/* Logo mark */}
-          <Image src="/logo-white.png" alt="DEKAT" width={100} height={32} className="object-contain" />
+          <Image src="/gueposting-icon-light.png" alt="GUEPOSTING" width={36} height={36} className="object-contain" />
+          <span className="font-black text-white text-xl tracking-tight">GUEPOSTING</span>
         </div>
 
         {/* Desktop: full branding panel */}
         <div className="hidden md:flex flex-col flex-1 px-10 py-12 justify-between">
           {/* Logo */}
-          <Image src="/logo-white.png" alt="DEKAT" width={140} height={44} className="object-contain" />
+          <div className="flex items-center gap-3">
+            <Image src="/gueposting-icon-light.png" alt="GUEPOSTING" width={44} height={44} className="object-contain" />
+            <span className="font-black text-white text-2xl tracking-tight">GUEPOSTING</span>
+          </div>
 
           {/* Hero */}
           <div className="flex flex-col items-start gap-3">
             <h1 className="text-3xl font-bold text-white leading-snug">
-              Bergabung ke DEKAT
+              Bergabung ke GUEPOSTING
             </h1>
             <p className="text-white/80 text-sm">
               Komunitas gadget terpercaya di Indonesia
@@ -557,7 +560,7 @@ export default function RegisterPage() {
               >
                 Kebijakan Privasi
               </Link>{" "}
-              DEKAT
+              GUEPOSTING
             </p>
           </div>
         </div>

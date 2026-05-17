@@ -162,7 +162,7 @@ function NewPostPageInner() {
     review: "Tulis review jujur kamu tentang gadget ini...",
     photo: "Ceritakan foto yang kamu bagikan...",
     video: "Deskripsi video kamu...",
-    discussion: "Mulai diskusi seru dengan komunitas DEKAT...",
+    discussion: "Mulai diskusi seru dengan komunitas GUEPOSTING...",
     other: "Apa yang ingin kamu bagikan?",
   };
 
@@ -269,7 +269,7 @@ function NewPostPageInner() {
                     <span className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-lg flex-shrink-0">+</span>
                     <div>
                       <p className="text-xs font-semibold">Tambah "{gadgetSearch}" sebagai gadget baru</p>
-                      <p className="text-[10px] text-gray-400">Belum ada di database DEKAT</p>
+                      <p className="text-[10px] text-gray-400">Belum ada di database GUEPOSTING</p>
                     </div>
                   </button>
                 )}

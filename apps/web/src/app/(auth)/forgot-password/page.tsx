@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
           <p className="text-sm font-semibold text-amber-800">Cara reset password:</p>
           <ol className="text-sm text-amber-700 space-y-2 list-decimal list-inside">
-            <li>Hubungi admin DEKAT melalui WhatsApp atau email</li>
+            <li>Hubungi admin GUEPOSTING melalui WhatsApp atau email</li>
             <li>Berikan username atau email akunmu</li>
             <li>Admin akan reset password sementara untukmu</li>
             <li>Login dengan password sementara, lalu ganti di Edit Profil</li>
@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
 
         <div className="space-y-3">
           <a
-            href="mailto:ghesang@gmail.com?subject=Reset Password DEKAT"
+            href="mailto:ghesang@gmail.com?subject=Reset Password GUEPOSTING"
             className="flex items-center justify-center gap-2 w-full py-3 bg-[#d42b2b] text-white font-bold rounded-xl hover:bg-[#c0281f] transition-colors"
           >
             <Mail size={16} />

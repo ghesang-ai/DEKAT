@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
       setHasHydrated: (v) => set({ _hasHydrated: v }),
     }),
     {
-      name: "dekat-auth",
+      name: "gueposting-auth",
       partialize: (s) => ({ user: s.user, token: s.token }),
       onRehydrateStorage: () => (state) => { state?.setHasHydrated(true); },
     }

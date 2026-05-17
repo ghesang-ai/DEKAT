@@ -82,7 +82,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 fixed left-0 top-0 bottom-0 bg-white border-r border-gray-100 flex flex-col z-40">
         {/* Red top section */}
         <div className="bg-[#d42b2b] px-5 py-4 flex items-center gap-2">
-          <span className="font-bold text-white text-lg tracking-tight">DEKAT</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+          <span className="font-bold text-white text-lg tracking-tight">GUEPOSTING</span>
           <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">ADMIN</span>
         </div>
 
@@ -164,7 +166,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               A
             </div>
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-gray-800">Admin DEKAT</p>
+              <p className="text-sm font-semibold text-gray-800">Admin GUEPOSTING</p>
               <p className="text-xs text-gray-500">Super Admin</p>
             </div>
           </div>

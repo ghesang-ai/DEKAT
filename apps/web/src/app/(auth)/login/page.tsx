@@ -73,17 +73,21 @@ export default function LoginPage() {
       <div className="relative flex items-start justify-between mb-8">
         {/* Left: logo + headline */}
         <div className="flex-1 pt-2 z-10">
-          <Image
-            src="/logo-wordmark.png"
-            alt="DEKAT"
-            width={110}
-            height={36}
-            className="object-contain mb-5"
+          <div
+            className="mb-5 overflow-hidden"
+            style={{
+              width: 300,
+              height: 78,
+              backgroundImage: `url(/gueposting-logo-wide.png)`,
+              backgroundSize: "auto 78px",
+              backgroundPosition: "-13px center",
+              backgroundRepeat: "no-repeat",
+            }}
           />
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">
             Selamat datang<br />
             di{" "}
-            <span className="text-[#d42b2b]">DEKAT</span>
+            <span className="text-[#d42b2b]">GUEPOSTING</span>
           </h1>
           <p className="text-sm text-gray-500 mt-2 leading-relaxed max-w-[200px]">
             Masuk untuk melanjutkan perjalanan berbagi dan menemukan hal terbaik seputar gadget.
@@ -264,7 +268,7 @@ export default function LoginPage() {
         </div>
         <div className="flex-1">
           <p className="text-sm font-bold text-gray-800">Aman &amp; Terpercaya</p>
-          <p className="text-xs text-gray-500 mt-0.5">Data kamu aman bersama DEKAT. Kami tidak akan membagikannya.</p>
+          <p className="text-xs text-gray-500 mt-0.5">Data kamu aman bersama GUEPOSTING. Kami tidak akan membagikannya.</p>
         </div>
         <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
