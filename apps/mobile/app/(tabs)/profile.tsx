@@ -178,7 +178,7 @@ export default function ProfileScreen() {
         <Text style={styles.usernameText}>@{username}</Text>
 
         {createdAt ? (
-          <Text style={styles.memberSince}>DEKAT Member sejak {formatMemberSince(createdAt)}</Text>
+          <Text style={styles.memberSince}>GUEPOSTING Member sejak {formatMemberSince(createdAt)}</Text>
         ) : null}
 
         {location ? (

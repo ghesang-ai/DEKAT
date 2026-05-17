@@ -13,6 +13,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 DEKAT API running on port ${port} [admin gadgets enabled]`);
+  console.log(`🚀 GUEPOSTING API running on port ${port} [admin gadgets enabled]`);
 }
 bootstrap();

@@ -81,7 +81,7 @@ export default function FeedScreen() {
           <View style={styles.createAvatar}><Text style={styles.createAvatarText}>D</Text></View>
           <View style={{ flex: 1 }}>
             <Text style={styles.createTitle}>Apa yang baru?</Text>
-            <Text style={styles.createSub}>Bagikan ke komunitas DEKAT</Text>
+            <Text style={styles.createSub}>Bagikan ke komunitas GUEPOSTING</Text>
           </View>
           <TouchableOpacity style={styles.createBtn}>
             <Text style={styles.createBtnText}>✏ Buat Post</Text>

@@ -28,7 +28,7 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <View style={styles.inner}>
-        <Text style={styles.logo}>DEKAT</Text>
+        <Text style={styles.logo}>GUEPOSTING</Text>
         <Text style={styles.subtitle}>Masuk ke akunmu</Text>
 
         <TextInput

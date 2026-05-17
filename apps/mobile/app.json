@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "DEKAT",
-    "slug": "dekat",
+    "name": "GUEPOSTING",
+    "slug": "gueposting",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "dekat",
+    "scheme": "gueposting",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",

@@ -28,18 +28,18 @@ describe('InvitesService', () => {
 
   it('create should generate invite with 7-day expiry', async () => {
     const now = Date.now();
-    mockPrisma.invite.create.mockResolvedValue({ id: '1', code: 'DEKAT-ABCD12', expiresAt: new Date(now + 7 * 86400000) });
+    mockPrisma.invite.create.mockResolvedValue({ id: '1', code: 'GUEPOSTING-ABCD12', expiresAt: new Date(now + 7 * 86400000) });
     const invite = await service.create('user-1');
     const expiryDiff = invite.expiresAt.getTime() - now;
     expect(expiryDiff).toBeGreaterThan(6 * 86400000);
-    expect(invite.code).toMatch(/^DEKAT-/);
+    expect(invite.code).toMatch(/^GUEPOSTING-/);
   });
 
   it('redeem should throw if code expired', async () => {
     mockPrisma.invite.findUnique.mockResolvedValue({
-      id: '1', code: 'DEKAT-ABCD12', usedById: null,
+      id: '1', code: 'GUEPOSTING-ABCD12', usedById: null,
       expiresAt: new Date(Date.now() - 1000),
     });
-    await expect(service.redeem('DEKAT-ABCD12', 'user-2')).rejects.toThrow(BadRequestException);
+    await expect(service.redeem('GUEPOSTING-ABCD12', 'user-2')).rejects.toThrow(BadRequestException);
   });
 });

@@ -168,7 +168,7 @@ export class AdminService {
   async createInvite(adminId: string, count = 1) {
     const codes = await Promise.all(
       Array.from({ length: count }).map(() => {
-        const code = `DEKAT-${nanoid(8).toUpperCase()}`;
+        const code = `GUEPOSTING-${nanoid(8).toUpperCase()}`;
         const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         return this.prisma.invite.create({ data: { code, createdById: adminId, expiresAt } });
       }),

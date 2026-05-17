@@ -7,7 +7,7 @@ export class InvitesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createdById: string) {
-    const code = `DEKAT-${nanoid(8).toUpperCase()}`;
+    const code = `GUEPOSTING-${nanoid(8).toUpperCase()}`;
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     return this.prisma.invite.create({ data: { code, createdById, expiresAt } });
   }

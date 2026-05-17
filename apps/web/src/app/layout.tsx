@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DEKAT — Gadget Social Network",
+  title: "GUEPOSTING — Gadget Social Network",
   description: "Platform komunitas gadget Indonesia",
 };
 

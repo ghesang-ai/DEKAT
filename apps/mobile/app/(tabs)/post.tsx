@@ -52,7 +52,7 @@ const PLACEHOLDERS: Record<PostType, string> = {
   review: "Tulis review jujur kamu tentang gadget ini...",
   photo: "Ceritakan foto yang kamu bagikan...",
   video: "Deskripsi video kamu...",
-  discussion: "Mulai diskusi seru dengan komunitas DEKAT...",
+  discussion: "Mulai diskusi seru dengan komunitas GUEPOSTING...",
   other: "Apa yang ingin kamu bagikan?",
 };
 
