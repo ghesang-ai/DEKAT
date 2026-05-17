@@ -237,6 +237,10 @@ export default function LoginPage() {
       <div className="mb-6">
         <button
           type="button"
+          onClick={() => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/api/v1";
+            window.location.href = `${apiBase}/auth/google`;
+          }}
           className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
         >
           <svg width="18" height="18" viewBox="0 0 48 48">
