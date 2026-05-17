@@ -55,9 +55,16 @@ export default function CommunityListPage() {
   return (
     <div className="bg-[#f5f5f5] min-h-screen">
       <header className="sticky top-0 z-10 bg-[#c0281f] px-4 pt-4 pb-3">
-        <div className="flex items-center gap-2 mb-3">
-          <Users size={20} className="text-white" />
-          <h1 className="text-white font-bold text-lg">Komunitas</h1>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gueposting-icon-light.png" alt="GP" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+            <span className="font-black text-white text-lg tracking-tight">GUEPOSTING</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users size={18} className="text-white/80" />
+            <span className="text-white/80 text-sm font-semibold">Komunitas</span>
+          </div>
         </div>
         <div className="relative">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />

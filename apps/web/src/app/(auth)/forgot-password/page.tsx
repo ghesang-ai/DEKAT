@@ -14,12 +14,14 @@ export default function ForgotPasswordPage() {
         </Link>
 
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto">
-            <Mail size={28} className="text-[#d42b2b]" />
+          <div className="flex items-center justify-center gap-2 mb-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gueposting-icon-red.png" alt="GUEPOSTING" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+            <span className="font-black text-xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Lupa Password?</h1>
           <p className="text-muted-foreground text-sm">
-            DEKAT adalah platform invite-only. Reset password dilakukan oleh admin.
+            GUEPOSTING adalah platform invite-only. Reset password dilakukan oleh admin.
           </p>
         </div>
 

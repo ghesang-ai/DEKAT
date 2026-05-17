@@ -64,7 +64,11 @@ export default function OnboardingPage() {
       <div className="w-full max-w-sm space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="text-4xl mb-2">👋</div>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gueposting-icon-red.png" alt="GUEPOSTING" style={{ width: 48, height: 48, objectFit: 'contain' }} />
+            <span className="font-black text-2xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
+          </div>
           <h1 className="text-2xl font-bold tracking-tight">Selamat datang di GUEPOSTING!</h1>
           <p className="text-muted-foreground text-sm">
             Akunmu sedang menunggu persetujuan admin.<br/>

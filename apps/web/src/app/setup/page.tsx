@@ -48,12 +48,14 @@ export default function SetupPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center space-y-3">
-          <div className="w-14 h-14 bg-foreground rounded-2xl flex items-center justify-center mx-auto">
-            <Shield size={24} className="text-background" />
+          <div className="flex items-center justify-center gap-2 mb-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gueposting-icon-red.png" alt="GUEPOSTING" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+            <span className="font-black text-xl tracking-tight" style={{ color: "#d42b2b" }}>GUEPOSTING</span>
           </div>
           <h1 className="text-2xl font-bold">Setup Admin</h1>
           <p className="text-muted-foreground text-sm">
-            Buat akun admin pertama untuk DEKAT.<br />
+            Buat akun admin pertama untuk GUEPOSTING.<br />
             Halaman ini hanya bisa dipakai sekali.
           </p>
         </div>
