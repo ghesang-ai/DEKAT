@@ -107,7 +107,7 @@ export default function FeedPage() {
         <div className="bg-[#c0281f] px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <img src="/gueposting-icon-light.png" alt="GUEPOSTING" style={{ height: '40px', width: '40px', objectFit: 'contain' }} />
+              <img src="/gueposting-icon-light.png" alt="GUEPOSTING" style={{ height: '46px', width: '46px', objectFit: 'contain', borderRadius: '14px' }} />
               <span className="font-black text-white text-xl tracking-tight">GUEPOSTING</span>
             </div>
             <div className="flex items-center gap-2">
